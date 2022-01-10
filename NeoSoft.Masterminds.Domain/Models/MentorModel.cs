@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NeoSoft.Masterminds.Domain.Models.Models;
+using System;
 using System.Collections.Generic;
 
 namespace NeoSoft.Masterminds.Domain

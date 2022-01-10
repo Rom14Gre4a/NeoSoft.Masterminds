@@ -2,7 +2,8 @@
 
 namespace NeoSoft.Masterminds.Infrastructure.Business
 {
-    public class MentorService
+    public class MentorService : IMentorService
     {
     }
 }
+ 

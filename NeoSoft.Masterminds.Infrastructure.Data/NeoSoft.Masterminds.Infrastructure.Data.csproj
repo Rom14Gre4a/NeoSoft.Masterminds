@@ -8,4 +8,8 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.22" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\NeoSoft.Masterminds.DomainServises\NeoSoft.Masterminds.Domain.Interfaces.csproj" />
+  </ItemGroup>
+
 </Project>
