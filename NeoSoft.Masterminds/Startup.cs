@@ -13,6 +13,8 @@ using System.Threading.Tasks;
 using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
 using NeoSoft.Masterminds.Infrastructure.Data;
+using NeoSoft.Masterminds.Infrastructure.Business;
+using NeoSoft.Masterminds.Services.Interfaces;
 
 namespace NeoSoft.Masterminds
 {
@@ -29,12 +31,15 @@ namespace NeoSoft.Masterminds
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<MastermindsDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddScoped<IMentorService, MentorService>();
+            services.AddScoped<IFileService, FileService>();
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "NeoSoft.Masterminds", Version = "v1" });
             });
             
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -44,6 +49,7 @@ namespace NeoSoft.Masterminds
             databaseMigrateTask.Wait();
             if (env.IsDevelopment())
             {
+                var seed
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI();

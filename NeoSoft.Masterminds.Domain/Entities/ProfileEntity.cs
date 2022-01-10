@@ -10,6 +10,9 @@ namespace NeoSoft.Masterminds.Domain.Models.Entities
         public FileEntity Photo { get; set; }
         public string ProfileFirstName { get; set; }
         public int ProfileLastName { get; set; }
+        public IList<ReviewEntity> SentReivews { get; set; }
+
+        public IList<ReviewEntity> ReceivedReivews { get; set; }
 
     }
 }

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using NeoSoft.Masterminds.Domain.Models.Enums;
+
 
 namespace NeoSoft.Masterminds.Domain.Models.Entities
 {
@@ -10,7 +12,7 @@ namespace NeoSoft.Masterminds.Domain.Models.Entities
         public string InitialName { get; set; }
         public string ContentType { get; set; }
         public string Extention { get; set; }
-        public enum FileType {get; set; }
+        public enum FileType { }
 
     }
 }

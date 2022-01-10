@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 
 namespace NeoSoft.Masterminds.Infrastructure.Data.Repositories
 {
-    public class ProfileRepository : IProfileRepository
+    public class MentorRepository : IMentorRepository
     {
         private readonly MastermindsDbContext _dbContext;
 
-        public ProfileRepository(MastermindsDbContext dbContext)
+        public MentorRepository(MastermindsDbContext dbContext)
         {
             _dbContext = dbContext;
         }

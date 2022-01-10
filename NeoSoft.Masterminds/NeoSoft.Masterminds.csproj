@@ -15,7 +15,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\NeoSoft.Masterminds.Infrastructure.Business\NeoSoft.Masterminds.Infrastructure.Business.csproj" />
     <ProjectReference Include="..\NeoSoft.Masterminds.Infrastructure.Data\NeoSoft.Masterminds.Infrastructure.Data.csproj" />
+    <ProjectReference Include="..\NeoSoft.Masterminds.Services.Interfaces\NeoSoft.Masterminds.Services.Interfaces.csproj" />
   </ItemGroup>
 
 
