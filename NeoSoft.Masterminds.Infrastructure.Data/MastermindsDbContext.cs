@@ -10,7 +10,6 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
         public MastermindsDbContext(DbContextOptions<MastermindsDbContext> options)
            : base(options)
         {
-            Database.EnsureCreated();
         }
         public DbSet<ProfileEntity> Profiles { get; set; }
         public DbSet<MentorEntity> Mentors { get; set; }

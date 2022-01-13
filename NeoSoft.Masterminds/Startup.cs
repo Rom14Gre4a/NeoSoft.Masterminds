@@ -36,11 +36,10 @@ namespace NeoSoft.Masterminds
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<MastermindsDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-            services.AddIdentity<AppUser, AppRole>();
-                //.AddEntityFrameworkStores<MastermindsDbContext>();
+
             services.AddScoped<IMentorRepository, MentorRepository>();
             services.AddScoped<IMentorService, MentorService>();
-            //services.AddTransient<IFileService, FileService>();
+
             services.AddControllers()
                  .AddJsonOptions(options =>
                  {
@@ -61,14 +60,14 @@ namespace NeoSoft.Masterminds
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, MastermindsDbContext context, UserManager<AppUser> userManager) 
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, MastermindsDbContext context) 
         {
             var databaseMigrateTask = Task.Run(() => context.Database.MigrateAsync());
             databaseMigrateTask.Wait();
 
             if (env.IsDevelopment())
             {
-                var seedFakeDataTask = Task.Run(() => FakeDataHelper.SeedFakeData(context, userManager));
+                var seedFakeDataTask = Task.Run(() => new FakeDataHelper(context).SeedFakeData());
                 seedFakeDataTask.Wait();
 
                 
@@ -83,7 +82,7 @@ namespace NeoSoft.Masterminds
             app.UseHttpsRedirection();
 
             app.UseRouting();
-
+ 
             app.UseAuthentication();
 
             app.UseAuthorization();
