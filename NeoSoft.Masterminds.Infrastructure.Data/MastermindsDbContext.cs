@@ -1,6 +1,7 @@
 ﻿using NeoSoft.Masterminds.Domain.Models.Entities;
 using Microsoft.EntityFrameworkCore;
-
+using System.Threading.Tasks;
+using NeoSoft.Masterminds.Domain.Models.Entities.Identity;
 
 namespace NeoSoft.Masterminds.Infrastructure.Data
 {
@@ -24,6 +25,10 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
             OnMentorEntityCreating(modelBuilder);
             OnReviewEntityCreating(modelBuilder);
             OnFileEntityCreating(modelBuilder);
+
+            OnAppUserEntityCreating(modelBuilder);
+
+
         }
 
         private void OnProfileEntityCreating(ModelBuilder modelBuilder)
@@ -47,7 +52,7 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
             modelBuilder.Entity<MentorEntity>().Property(x => x.HourlyRate);
             modelBuilder.Entity<MentorEntity>()
                 .HasOne(me => me.Profile)
-                .WithOne()
+                .WithOne(p => p.Mentor)
                 .HasForeignKey<MentorEntity>(me => me.Id);
         }
         private void OnReviewEntityCreating(ModelBuilder modelBuilder)
@@ -57,8 +62,9 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
             modelBuilder.Entity<ReviewEntity>().Property(x => x.Text).IsRequired();
             modelBuilder.Entity<ReviewEntity>()
                 .HasOne(re => re.Owner)
-                .WithOne()
-                .HasForeignKey<ReviewEntity>(me => me.Id);
+                .WithMany(r => r.Reviews)
+                .HasForeignKey(re => re.OwnerId)
+                .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<ReviewEntity>()
                .HasOne(re => re.Mentor)
@@ -69,11 +75,39 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
         private void OnFileEntityCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<FileEntity>().ToTable("Files");
-            modelBuilder.Entity<FileEntity>().HasKey(p =>p.Id);
+            modelBuilder.Entity<FileEntity>().HasKey(p => p.Id);
             modelBuilder.Entity<FileEntity>().Property(x => x.Name).IsRequired().HasMaxLength(100);
             modelBuilder.Entity<FileEntity>().Property(x => x.InitialName).IsRequired().HasMaxLength(100);
             modelBuilder.Entity<FileEntity>().Property(x => x.ContentType).IsRequired().HasMaxLength(100);
             modelBuilder.Entity<FileEntity>().Property(x => x.Extention).IsRequired().HasMaxLength(100);
         }
+
+        private void OnAppUserEntityCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<AppUser>().ToTable("AppUsers");
+
+            modelBuilder.Entity<AppUser>()
+                .HasOne(appUser => appUser.Profile)
+                .WithOne(p => p.AppUser)
+                .HasForeignKey<AppUser>(appUser => appUser.Id);
+        }
+
+
+
+        //private static void SeedFakeData(ModelBuilder modelBuilder)
+        //{
+        // SeedFakeMentors(modelBuilder);
+        //}
+        //private static void SeedFakeMentors(ModelBuilder modelBuilder)
+        //{
+        //    var fakeMentors = FakeDataHelper.GenerateMentors(50);
+
+        //    foreach (var fakeMentor in fakeMentors)
+        //    {
+        //        modelBuilder.Entity<MentorEntity>().HasData(fakeMentor);
+        //    }
+        //}
+
+
     }
 }

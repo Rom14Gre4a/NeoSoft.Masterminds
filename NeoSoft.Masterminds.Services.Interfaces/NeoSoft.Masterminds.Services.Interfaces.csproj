@@ -2,6 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NeoSoft.Masterminds.Domain\NeoSoft.Masterminds.Domain.Models.csproj" />
+  </ItemGroup>
 
 </Project>

@@ -12,7 +12,7 @@ namespace NeoSoft.Masterminds.Domain.Models.Entities
         public string InitialName { get; set; }
         public string ContentType { get; set; }
         public string Extention { get; set; }
-        public enum FileType { }
+        public FileType FileType { get; set; }
 
     }
 }

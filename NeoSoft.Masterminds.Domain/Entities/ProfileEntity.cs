@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NeoSoft.Masterminds.Domain.Models.Entities.Identity;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -8,11 +9,11 @@ namespace NeoSoft.Masterminds.Domain.Models.Entities
     {
         public int? PhotoId { get; set; }
         public FileEntity Photo { get; set; }
+        public MentorEntity Mentor { get; set; }
         public string ProfileFirstName { get; set; }
-        public int ProfileLastName { get; set; }
-        public IList<ReviewEntity> SentReivews { get; set; }
-
-        public IList<ReviewEntity> ReceivedReivews { get; set; }
+        public string ProfileLastName { get; set; }
+        public AppUser AppUser { get; set; }
+        public virtual IList<ReviewEntity> Reviews { get; set; }
 
     }
 }

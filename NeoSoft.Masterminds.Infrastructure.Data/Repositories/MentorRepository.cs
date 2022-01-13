@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NeoSoft.Masterminds.Domain.Interfaces;
 using NeoSoft.Masterminds.Domain.Models.Entities;
+using NeoSoft.Masterminds.Domain;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -16,21 +17,19 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Repositories
         {
             _dbContext = dbContext;
         }
+        public Task<MentorEntity> GetMentorProfileById(int mentorId)
+        { var mentor =  _dbContext
+                .Mentors
+                .Include(x => x.Profile)
+                .Include(x => x.Reviews).ThenInclude(x => x.Owner)
+                .FirstOrDefaultAsync(x => x.Id == mentorId);
 
-        public async Task<bool> AddProfile(ProfileEntity profile)
-        {
-            _dbContext.Profiles.Add(profile);
-            await _dbContext.SaveChangesAsync();
-
-            return true;
+            return mentor;
+            //var mentor = await _dbContext.Mentors.FirstOrDefaultAsync(x => x.Id == mentorId);
+            //return mentor;
         }
-        public async Task<ProfileEntity> GetProfile(int profileId)
-        {
-            var profile = await _dbContext.Profiles.FirstOrDefaultAsync(x => x.Id == profileId);
-            return profile;
-        }
-     
 
-       
+
+
     }
 }

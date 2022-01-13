@@ -2,9 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\NeoSoft.Masterminds.DomainServises\NeoSoft.Masterminds.Domain.Interfaces.csproj" />
     <ProjectReference Include="..\NeoSoft.Masterminds.Services.Interfaces\NeoSoft.Masterminds.Services.Interfaces.csproj" />
   </ItemGroup>
 
