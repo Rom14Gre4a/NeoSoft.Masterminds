@@ -2,7 +2,7 @@
 
 namespace NeoSoft.Masterminds.Infrastructure.Data.Migrations
 {
-    public partial class InitialReview : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -30,6 +30,7 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     PhotoId = table.Column<int>(nullable: true),
+                    MentorId = table.Column<int>(nullable: true),
                     ProfileFirstName = table.Column<string>(maxLength: 50, nullable: false),
                     ProfileLastName = table.Column<string>(maxLength: 50, nullable: false)
                 },
@@ -70,7 +71,7 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false),
-                    MentorId = table.Column<int>(nullable: false),
+                    FromMentorId = table.Column<int>(nullable: false),
                     Rating = table.Column<double>(nullable: false),
                     Text = table.Column<string>(nullable: false),
                     ProfileEntityId = table.Column<int>(nullable: true)
@@ -79,16 +80,16 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Migrations
                 {
                     table.PrimaryKey("PK_Reviews", x => x.Id);
                     table.ForeignKey(
+                        name: "FK_Reviews_Mentors_FromMentorId",
+                        column: x => x.FromMentorId,
+                        principalTable: "Mentors",
+                        principalColumn: "Id");
+                    table.ForeignKey(
                         name: "FK_Reviews_Profiles_Id",
                         column: x => x.Id,
                         principalTable: "Profiles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Reviews_Mentors_MentorId",
-                        column: x => x.MentorId,
-                        principalTable: "Mentors",
-                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Reviews_Profiles_ProfileEntityId",
                         column: x => x.ProfileEntityId,
@@ -98,6 +99,11 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_Profiles_MentorId",
+                table: "Profiles",
+                column: "MentorId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Profiles_PhotoId",
                 table: "Profiles",
                 column: "PhotoId",
@@ -105,26 +111,38 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Migrations
                 filter: "[PhotoId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Reviews_MentorId",
+                name: "IX_Reviews_FromMentorId",
                 table: "Reviews",
-                column: "MentorId");
+                column: "FromMentorId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Reviews_ProfileEntityId",
                 table: "Reviews",
                 column: "ProfileEntityId");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Profiles_Mentors_MentorId",
+                table: "Profiles",
+                column: "MentorId",
+                principalTable: "Mentors",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Restrict);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropForeignKey(
+                name: "FK_Mentors_Profiles_Id",
+                table: "Mentors");
+
             migrationBuilder.DropTable(
                 name: "Reviews");
 
             migrationBuilder.DropTable(
-                name: "Mentors");
+                name: "Profiles");
 
             migrationBuilder.DropTable(
-                name: "Profiles");
+                name: "Mentors");
 
             migrationBuilder.DropTable(
                 name: "Files");

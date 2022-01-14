@@ -6,7 +6,7 @@ namespace NeoSoft.Masterminds.Domain.Models.Entities
 {
     public class ReviewEntity : BaseEntity
     {
-        public int MentorId { get; set; }
+        public int FromMentorId { get; set; }
         public MentorEntity Mentor { get; set; }
        
         public double Rating { get; set; }

@@ -65,7 +65,7 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
             modelBuilder.Entity<ReviewEntity>()
                .HasOne(re => re.Mentor)
                .WithMany(p => p.Reviews)
-               .HasForeignKey(p => p.MentorId)
+               .HasForeignKey(p => p.FromMentorId)
                .OnDelete(DeleteBehavior.NoAction);
         }
         private void OnFileEntityCreating(ModelBuilder modelBuilder)

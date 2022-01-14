@@ -10,8 +10,8 @@ using NeoSoft.Masterminds.Infrastructure.Data;
 namespace NeoSoft.Masterminds.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(MastermindsDbContext))]
-    [Migration("20220114115007_InitialReview")]
-    partial class InitialReview
+    [Migration("20220114144156_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -90,6 +90,9 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<int?>("MentorId")
+                        .HasColumnType("int");
+
                     b.Property<int?>("PhotoId")
                         .HasColumnType("int");
 
@@ -105,6 +108,8 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("MentorId");
+
                     b.HasIndex("PhotoId")
                         .IsUnique()
                         .HasFilter("[PhotoId] IS NOT NULL");
@@ -117,7 +122,7 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Migrations
                     b.Property<int>("Id")
                         .HasColumnType("int");
 
-                    b.Property<int>("MentorId")
+                    b.Property<int>("FromMentorId")
                         .HasColumnType("int");
 
                     b.Property<int?>("ProfileEntityId")
@@ -132,7 +137,7 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MentorId");
+                    b.HasIndex("FromMentorId");
 
                     b.HasIndex("ProfileEntityId");
 
@@ -142,7 +147,7 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Migrations
             modelBuilder.Entity("NeoSoft.Masterminds.Domain.Models.Entities.MentorEntity", b =>
                 {
                     b.HasOne("NeoSoft.Masterminds.Domain.Models.Entities.ProfileEntity", "Profile")
-                        .WithOne("Mentor")
+                        .WithOne()
                         .HasForeignKey("NeoSoft.Masterminds.Domain.Models.Entities.MentorEntity", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -150,6 +155,10 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("NeoSoft.Masterminds.Domain.Models.Entities.ProfileEntity", b =>
                 {
+                    b.HasOne("NeoSoft.Masterminds.Domain.Models.Entities.MentorEntity", "Mentor")
+                        .WithMany()
+                        .HasForeignKey("MentorId");
+
                     b.HasOne("NeoSoft.Masterminds.Domain.Models.Entities.FileEntity", "Photo")
                         .WithOne()
                         .HasForeignKey("NeoSoft.Masterminds.Domain.Models.Entities.ProfileEntity", "PhotoId");
@@ -157,16 +166,16 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("NeoSoft.Masterminds.Domain.Models.Entities.ReviewEntity", b =>
                 {
+                    b.HasOne("NeoSoft.Masterminds.Domain.Models.Entities.MentorEntity", "Mentor")
+                        .WithMany("Reviews")
+                        .HasForeignKey("FromMentorId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
                     b.HasOne("NeoSoft.Masterminds.Domain.Models.Entities.ProfileEntity", "Owner")
                         .WithOne()
                         .HasForeignKey("NeoSoft.Masterminds.Domain.Models.Entities.ReviewEntity", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("NeoSoft.Masterminds.Domain.Models.Entities.MentorEntity", "Mentor")
-                        .WithMany("Reviews")
-                        .HasForeignKey("MentorId")
-                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("NeoSoft.Masterminds.Domain.Models.Entities.ProfileEntity", null)
