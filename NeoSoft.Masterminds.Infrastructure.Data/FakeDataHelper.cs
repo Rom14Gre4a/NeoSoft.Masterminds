@@ -6,9 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using System.Linq;
-using NeoSoft.Masterminds.Domain.Models.Entities.Identity;
-using Microsoft.AspNetCore.Identity;
 
 
 namespace NeoSoft.Masterminds.Infrastructure.Data
@@ -31,14 +28,14 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
             if (!anyMentors)
             {
                 await CreateMentorsAndProfilesAsync(100);
-
+                await GenerateReviews(100);
                 await _context.SaveChangesAsync();
             }
         }
 
         private async Task CreateMentorsAndProfilesAsync(int mentorCount)
         {
-            var mentorFake = new Faker<MentorEntity>()
+            var mentorFaker = new Faker<MentorEntity>()
             .RuleFor(m => m.HourlyRate, f => f.Random.Int(5, 50))
             .RuleFor(m => m.Description, f => f.Lorem.Text())
             .RuleFor(m => m.ProfessionalAspects, f => f.Lorem.Word())
@@ -49,9 +46,26 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
                  ProfileLastName = f.Name.LastName()
              });
 
-            _mentors = mentorFake.Generate(mentorCount);
+            _mentors = mentorFaker.Generate(mentorCount);
 
             await _context.AddRangeAsync(_mentors);
+        }
+        private async Task GenerateReviews(int fakeNumber)
+        {
+            var reviewId = 1;
+            var reviewFaker = new Faker<ReviewEntity>()
+                 .CustomInstantiator(f => new ReviewEntity { Id = reviewId++ })
+                .RuleFor(x => x.Owner, f => new ProfileEntity
+                {
+                    ProfileFirstName = f.Person.FirstName,
+                    ProfileLastName = f.Person.LastName,
+                    //photo
+                })
+                .RuleFor(x => x.Rating, f => f.Random.Double(1, 5))
+                .RuleFor(x => x.Text, f => f.Random.Words());
+             
+
+            await _context.AddRangeAsync(reviewFaker.Generate(fakeNumber));
         }
 
     }

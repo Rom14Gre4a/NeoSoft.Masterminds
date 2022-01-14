@@ -13,6 +13,6 @@ namespace NeoSoft.Masterminds.Domain.Models.Entities
         public string Text { get; set; }
 
         public ProfileEntity Owner { get; set; } 
-        public int OwnerId { get; set; }
+       // public int OwnerId { get; set; }
     }
 }

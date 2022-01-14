@@ -10,8 +10,8 @@ using NeoSoft.Masterminds.Infrastructure.Data;
 namespace NeoSoft.Masterminds.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(MastermindsDbContext))]
-    [Migration("20220112143559_InitialRepository")]
-    partial class InitialRepository
+    [Migration("20220114115007_InitialReview")]
+    partial class InitialReview
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -120,6 +120,9 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Migrations
                     b.Property<int>("MentorId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("ProfileEntityId")
+                        .HasColumnType("int");
+
                     b.Property<double>("Rating")
                         .HasColumnType("float");
 
@@ -131,13 +134,15 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Migrations
 
                     b.HasIndex("MentorId");
 
+                    b.HasIndex("ProfileEntityId");
+
                     b.ToTable("Reviews");
                 });
 
             modelBuilder.Entity("NeoSoft.Masterminds.Domain.Models.Entities.MentorEntity", b =>
                 {
                     b.HasOne("NeoSoft.Masterminds.Domain.Models.Entities.ProfileEntity", "Profile")
-                        .WithOne()
+                        .WithOne("Mentor")
                         .HasForeignKey("NeoSoft.Masterminds.Domain.Models.Entities.MentorEntity", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -163,6 +168,10 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Migrations
                         .HasForeignKey("MentorId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
+
+                    b.HasOne("NeoSoft.Masterminds.Domain.Models.Entities.ProfileEntity", null)
+                        .WithMany("Reviews")
+                        .HasForeignKey("ProfileEntityId");
                 });
 #pragma warning restore 612, 618
         }

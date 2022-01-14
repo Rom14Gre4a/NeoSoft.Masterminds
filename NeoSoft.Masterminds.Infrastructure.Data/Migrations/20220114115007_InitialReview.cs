@@ -2,7 +2,7 @@
 
 namespace NeoSoft.Masterminds.Infrastructure.Data.Migrations
 {
-    public partial class InitialRepository : Migration
+    public partial class InitialReview : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -72,7 +72,8 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Migrations
                     Id = table.Column<int>(nullable: false),
                     MentorId = table.Column<int>(nullable: false),
                     Rating = table.Column<double>(nullable: false),
-                    Text = table.Column<string>(nullable: false)
+                    Text = table.Column<string>(nullable: false),
+                    ProfileEntityId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -88,6 +89,12 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Migrations
                         column: x => x.MentorId,
                         principalTable: "Mentors",
                         principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Reviews_Profiles_ProfileEntityId",
+                        column: x => x.ProfileEntityId,
+                        principalTable: "Profiles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -101,6 +108,11 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Migrations
                 name: "IX_Reviews_MentorId",
                 table: "Reviews",
                 column: "MentorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Reviews_ProfileEntityId",
+                table: "Reviews",
+                column: "ProfileEntityId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
