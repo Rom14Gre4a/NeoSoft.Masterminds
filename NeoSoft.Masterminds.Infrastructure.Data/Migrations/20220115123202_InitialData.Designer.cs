@@ -10,8 +10,8 @@ using NeoSoft.Masterminds.Infrastructure.Data;
 namespace NeoSoft.Masterminds.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(MastermindsDbContext))]
-    [Migration("20220114144156_Initial")]
-    partial class Initial
+    [Migration("20220115123202_InitialData")]
+    partial class InitialData
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -120,12 +120,14 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Migrations
             modelBuilder.Entity("NeoSoft.Masterminds.Domain.Models.Entities.ReviewEntity", b =>
                 {
                     b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("FromProfileId")
                         .HasColumnType("int");
 
-                    b.Property<int>("FromMentorId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("ProfileEntityId")
+                    b.Property<int?>("MentorEntityId")
                         .HasColumnType("int");
 
                     b.Property<double>("Rating")
@@ -135,11 +137,16 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("ToProfileId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("FromMentorId");
+                    b.HasIndex("FromProfileId");
 
-                    b.HasIndex("ProfileEntityId");
+                    b.HasIndex("MentorEntityId");
+
+                    b.HasIndex("ToProfileId");
 
                     b.ToTable("Reviews");
                 });
@@ -166,21 +173,21 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("NeoSoft.Masterminds.Domain.Models.Entities.ReviewEntity", b =>
                 {
-                    b.HasOne("NeoSoft.Masterminds.Domain.Models.Entities.MentorEntity", "Mentor")
-                        .WithMany("Reviews")
-                        .HasForeignKey("FromMentorId")
+                    b.HasOne("NeoSoft.Masterminds.Domain.Models.Entities.ProfileEntity", "FromProfile")
+                        .WithMany("SentReviews")
+                        .HasForeignKey("FromProfileId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("NeoSoft.Masterminds.Domain.Models.Entities.ProfileEntity", "Owner")
-                        .WithOne()
-                        .HasForeignKey("NeoSoft.Masterminds.Domain.Models.Entities.ReviewEntity", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("NeoSoft.Masterminds.Domain.Models.Entities.ProfileEntity", null)
+                    b.HasOne("NeoSoft.Masterminds.Domain.Models.Entities.MentorEntity", null)
                         .WithMany("Reviews")
-                        .HasForeignKey("ProfileEntityId");
+                        .HasForeignKey("MentorEntityId");
+
+                    b.HasOne("NeoSoft.Masterminds.Domain.Models.Entities.ProfileEntity", "ToProfile")
+                        .WithMany("RecivedReviews")
+                        .HasForeignKey("ToProfileId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

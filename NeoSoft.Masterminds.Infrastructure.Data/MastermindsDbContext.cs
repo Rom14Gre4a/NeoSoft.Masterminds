@@ -57,15 +57,18 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
             modelBuilder.Entity<ReviewEntity>().ToTable("Reviews");
             modelBuilder.Entity<ReviewEntity>().HasKey(p => p.Id);
             modelBuilder.Entity<ReviewEntity>().Property(x => x.Text).IsRequired();
-            modelBuilder.Entity<ReviewEntity>()
-                 .HasOne(re => re.Owner)
-                .WithOne()
-                .HasForeignKey<ReviewEntity>(me => me.Id);
+            modelBuilder
+                .Entity<ReviewEntity>()
+                 .HasOne(r => r.FromProfile)         //від кого
+                .WithMany(r => r.SentReviews)        // отримав    
+                .HasForeignKey(r => r.FromProfileId) // від кого айді   
+                .OnDelete(DeleteBehavior.NoAction);
 
-            modelBuilder.Entity<ReviewEntity>()
-               .HasOne(re => re.Mentor)
-               .WithMany(p => p.Reviews)
-               .HasForeignKey(p => p.FromMentorId)
+            modelBuilder
+                .Entity<ReviewEntity>()
+               .HasOne(r => r.ToProfile)             //Кому 
+               .WithMany(p => p.RecivedReviews)      //відправив
+               .HasForeignKey(r => r.ToProfileId)    //кому відправив айді
                .OnDelete(DeleteBehavior.NoAction);
         }
         private void OnFileEntityCreating(ModelBuilder modelBuilder)

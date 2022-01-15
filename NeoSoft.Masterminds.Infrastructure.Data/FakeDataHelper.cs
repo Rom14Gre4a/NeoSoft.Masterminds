@@ -56,14 +56,16 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
         }
         private List<ReviewEntity> GenerateReviews(int fakeNumber = 50)
         {
-            var reviewId = 1;
             var reviewFaker = new Faker<ReviewEntity>()
-                 .CustomInstantiator(f => new ReviewEntity { Id = reviewId++ })
-                .RuleFor(x => x.Owner, f => new ProfileEntity
+                .RuleFor(x => x.FromProfile, f => new ProfileEntity
                 {
                     ProfileFirstName = f.Person.FirstName,
                     ProfileLastName = f.Person.LastName,
-                    //photo
+                })
+                .RuleFor(x => x.ToProfile, f => new ProfileEntity
+                {
+                    ProfileFirstName = f.Person.FirstName,
+                    ProfileLastName = f.Person.LastName,
                 })
                 .RuleFor(x => x.Rating, f => f.Random.Double(1, 5))
                 .RuleFor(x => x.Text, f => f.Random.Words());
@@ -71,7 +73,12 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
 
             return reviewFaker.Generate(fakeNumber);
         }
-
+ //.RuleFor(x => x.ToProfile, f => new ProfileEntity
+ //               {
+ //                   ProfileFirstName = f.Person.FirstName,
+ //                   ProfileLastName = f.Person.LastName,
+ //                   //photo
+ //               })
     }
 
 }

@@ -21,7 +21,7 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Repositories
         { var mentor =  _dbContext
                 .Mentors
                 .Include(x => x.Profile)
-                .Include(x => x.Reviews).ThenInclude(x => x.Owner)
+                .Include(x => x.Reviews).ThenInclude(x => x.FromProfile)
                 .FirstOrDefaultAsync(x => x.Id == mentorId);
 
             return mentor;

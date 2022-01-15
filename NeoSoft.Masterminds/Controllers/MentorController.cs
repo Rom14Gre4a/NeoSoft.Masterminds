@@ -24,8 +24,10 @@ namespace NeoSoft.Masterminds.Controllers
         public async Task<IActionResult> GetMentorProfileById( int mentorId)
         {
             var mentorModel = await _mentorService.GetMentorProfileById(mentorId);
-
+            if (mentorModel == null)
+                return null;
             return Ok(mentorModel);
+            
         }
     }
 }

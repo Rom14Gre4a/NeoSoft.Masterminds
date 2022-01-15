@@ -6,13 +6,13 @@ namespace NeoSoft.Masterminds.Domain.Models.Entities
 {
     public class ReviewEntity : BaseEntity
     {
-        public int FromMentorId { get; set; }
-        public MentorEntity Mentor { get; set; }
-       
-        public double Rating { get; set; }
-        public string Text { get; set; }
+        public int FromProfileId { get; set; }
+        public ProfileEntity FromProfile { get; set; }
 
-        public ProfileEntity Owner { get; set; } 
-       // public int OwnerId { get; set; }
+        public int ToProfileId { get; set; }
+        public ProfileEntity ToProfile { get; set; } 
+
+        public string Text { get; set; }
+        public double Rating { get; set; }
     }
 }

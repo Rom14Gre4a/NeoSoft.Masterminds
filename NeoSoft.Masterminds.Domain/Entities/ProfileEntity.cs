@@ -12,7 +12,8 @@ namespace NeoSoft.Masterminds.Domain.Models.Entities
         public MentorEntity Mentor { get; set; }
         public string ProfileFirstName { get; set; }
         public string ProfileLastName { get; set; }
-        public virtual IList<ReviewEntity> Reviews { get; set; }
+        public virtual IList<ReviewEntity> SentReviews { get; set; }
+        public virtual IList<ReviewEntity> RecivedReviews { get; set; }
 
     }
 }
