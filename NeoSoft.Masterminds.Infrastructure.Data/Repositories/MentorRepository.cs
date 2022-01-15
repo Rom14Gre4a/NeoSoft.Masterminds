@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using NeoSoft.Masterminds.Domain.Models;
 
 namespace NeoSoft.Masterminds.Infrastructure.Data.Repositories
 {
@@ -27,6 +28,10 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Repositories
             return mentor;
             //var mentor = await _dbContext.Mentors.FirstOrDefaultAsync(x => x.Id == mentorId);
             //return mentor;
+        }
+        public Task<List<MentorEntity>> Get(GetFilter filter)
+        {
+
         }
 
 
