@@ -22,6 +22,8 @@ namespace NeoSoft.Masterminds.Infrastructure.Business
         public async Task<MentorModel> GetMentorProfileById(int mentorId)
         {
             var mentorEntity = await _mentorRepository.GetMentorProfileById(mentorId);
+            if (mentorEntity == null)
+                return null;
 
             var mentor = new MentorModel
             {
@@ -46,9 +48,9 @@ namespace NeoSoft.Masterminds.Infrastructure.Business
             return new MentorModel();
             
         }
-        public async Task<List<MentorListModel>> Get(int skip = 0, int take = 15)
+        public async Task<List<MentorListModel>> Get(GetFilter filter)
         {
-            var mentorListDb = await _mentorRepository.Get(skip, take);
+            var mentorListDb = await _mentorRepository.Get(filter);
            var list = new List<MentorListModel>();
             foreach (var mentor in mentorListDb)
             {

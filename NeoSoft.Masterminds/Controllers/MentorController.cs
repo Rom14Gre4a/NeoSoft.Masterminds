@@ -25,25 +25,38 @@ namespace NeoSoft.Masterminds.Controllers
             _logger = logger;
             _mentorService = mentorService;
         }
-        [HttpGet("Mentor")]
-        public async Task<IActionResult> GetMentorProfileById( int mentorId)
+        [HttpGet("mentorId")]
+        public async Task<ActionResult<MentorView>> GetMentorProfileById( int mentorId)
         {
             var mentorModel = await _mentorService.GetMentorProfileById(mentorId);
             if (mentorModel == null)
                 return null;
-            return Ok(mentorModel);
-            
+            return new MentorView
+            {
+                Id = mentorModel.Id,
+                FirstName = mentorModel.FirstName,
+                LastName = mentorModel.LastName,
+                Specialty = mentorModel.Specialty,
+                Description = mentorModel.Description,
+                HourlyRate = mentorModel.HourlyRate,
+                Rating = mentorModel.Rating,
+
+            };
         }
 
-        [HttpGet]
-        public async Task<List<MentorListView>> Get(int skip = 0, int take = 15)
+        [HttpGet("mentorsList")]
+        public async Task<List<MentorListView>> Get([FromQuery] GetListItems filter)
         {
-            var mentors = await _mentorService.Get(skip, take);
+            var mentors = await _mentorService.Get(new GetFilter
             {
+                Skip = filter.Skip ?? 0,
+                Take = filter.Take ?? 15,
+                OrderByProperty = string.Empty,
+                SearchText = filter.SearchText,
+                SortOrder = filter.SortOrder ?? SortOrder.Desc
+            });
 
-            }
 
-          
             return mentors.Select(x => new MentorListView
             {
                 Id = x.Id,
