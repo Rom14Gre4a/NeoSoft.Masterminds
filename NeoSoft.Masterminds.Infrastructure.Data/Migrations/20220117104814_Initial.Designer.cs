@@ -10,8 +10,8 @@ using NeoSoft.Masterminds.Infrastructure.Data;
 namespace NeoSoft.Masterminds.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(MastermindsDbContext))]
-    [Migration("20220115123202_InitialData")]
-    partial class InitialData
+    [Migration("20220117104814_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -66,7 +66,7 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("HourlyRate")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("Decimal(4,2)");
 
                     b.Property<string>("ProfessionalAspects")
                         .IsRequired()

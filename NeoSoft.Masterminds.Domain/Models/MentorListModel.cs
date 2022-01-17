@@ -12,6 +12,8 @@ namespace NeoSoft.Masterminds.Domain.Models.Models
         public string LastName { get; set; }
         public double Rating { get; set; }
         public string Specialty { get; set; }
+        public decimal HourlyRate { get; set; }
+        public string Description { get; set; }
 
     }
 

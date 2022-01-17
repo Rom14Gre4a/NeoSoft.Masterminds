@@ -9,6 +9,7 @@ namespace NeoSoft.Masterminds.Domain.Interfaces
     public interface IMentorRepository
     {
         Task<MentorEntity> GetMentorProfileById(int mentorId);
-        Task<List<MentorEntity>> Get(GetFilter filter);
+
+        Task<List<MentorEntity>> Get(int skip = 0, int take = 15);
     }
 }

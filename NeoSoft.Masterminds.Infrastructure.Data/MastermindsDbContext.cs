@@ -46,7 +46,7 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
             modelBuilder.Entity<MentorEntity>().Property(x => x.Specialty).IsRequired().HasMaxLength(50);
             modelBuilder.Entity<MentorEntity>().Property(x => x.ProfessionalAspects).IsRequired().HasMaxLength(50);
             modelBuilder.Entity<MentorEntity>().Property(x => x.Description).IsRequired();
-            modelBuilder.Entity<MentorEntity>().Property(x => x.HourlyRate);
+            modelBuilder.Entity<MentorEntity>().Property(x => x.HourlyRate).HasColumnType("Decimal(4,2)");
             modelBuilder.Entity<MentorEntity>()
                 .HasOne(me => me.Profile)
                 .WithOne()

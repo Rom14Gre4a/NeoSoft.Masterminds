@@ -36,16 +36,14 @@ namespace NeoSoft.Masterminds.Controllers
         }
 
         [HttpGet]
-        public async Task<List<MentorListView>> Get([FromQuery] GetListItems filter)
+        public async Task<List<MentorListView>> Get(int skip = 0, int take = 15)
         {
-            var mentors = await _mentorService.Get(new GetFilter
+            var mentors = await _mentorService.Get(skip, take);
             {
-                Skip = filter.Skip ?? 0,
-                Take = filter.Take ?? 15,
-                OrderByProperty = string.Empty,
-                SearchText = filter.SearchText,
-                SortOrder = filter.SortOrder ?? SortOrder.Desc
-            });
+
+            }
+
+          
             return mentors.Select(x => new MentorListView
             {
                 Id = x.Id,

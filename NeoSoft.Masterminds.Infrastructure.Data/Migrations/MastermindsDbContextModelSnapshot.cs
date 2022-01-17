@@ -64,7 +64,7 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("HourlyRate")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("Decimal(4,2)");
 
                     b.Property<string>("ProfessionalAspects")
                         .IsRequired()

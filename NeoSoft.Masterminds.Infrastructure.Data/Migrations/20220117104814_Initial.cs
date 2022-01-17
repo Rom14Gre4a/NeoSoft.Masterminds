@@ -2,7 +2,7 @@
 
 namespace NeoSoft.Masterminds.Infrastructure.Data.Migrations
 {
-    public partial class InitialData : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -51,7 +51,7 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Migrations
                 {
                     Id = table.Column<int>(nullable: false),
                     Specialty = table.Column<string>(maxLength: 50, nullable: false),
-                    HourlyRate = table.Column<decimal>(nullable: false),
+                    HourlyRate = table.Column<decimal>(type: "Decimal(4,2)", nullable: false),
                     ProfessionalAspects = table.Column<string>(maxLength: 50, nullable: false),
                     Description = table.Column<string>(nullable: false)
                 },
