@@ -21,17 +21,10 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Repositories
             _dbContext = dbContext;
         }
         public async Task<MentorEntity> GetMentorProfileById(int mentorId)
-        {  var mentor = await _dbContext.Mentors.Include(p => p.Profile).ThenInclude(r => r.SentReviews)
+        {  
+            var mentor = await _dbContext.Mentors.Include(p => p.Profile).ThenInclude(r => r.SentReviews)
                 .FirstOrDefaultAsync(m => m.Id == mentorId);
-            //var mentor =  _dbContext
-            //    .Mentors
-            //    .Include(x => x.Profile)
-            //    .Include(x => x.Reviews).ThenInclude(x => x.FromProfile)
-            //    .FirstOrDefaultAsync(x => x.Id == mentorId);
-
             return mentor;
-            //var mentor = await _dbContext.Mentors.FirstOrDefaultAsync(x => x.Id == mentorId);
-            //return mentor;
         }
         public async Task<List<MentorEntity>> Get(GetFilter filter)
         {
@@ -76,6 +69,55 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Repositories
                 .ToListAsync();
 
             return mentors;
+        }
+        public async Task<double> GetMentorRatingSum(int mentorId)
+        {
+            var ratingSum = await _dbContext.Reviews.Where(x => x.ToProfileId == mentorId).SumAsync(x => x.Rating);
+            return ratingSum;
+        }
+        public async Task<Dictionary<int, double>> GetMentorRatingSum(int[] mentorIds) // 1, 2, 3, 4, 5
+        {
+            var ratingSums = await _dbContext
+                .Reviews
+                .Where(x => mentorIds.Contains(x.ToProfileId)) // where Id in (1, 2, 3, 4, 5)
+                .GroupBy(x => x.ToProfileId)
+                .Select(x => new
+                {
+                    MentorId = x.Key,
+                    RatingSum = x.Sum(x => x.Rating)
+                })
+                .ToDictionaryAsync(key => key.MentorId, value => value.RatingSum);
+
+            // 1 => 3.4353
+            // 2 => 20.4353
+            // 3 = 4.53424
+
+            return ratingSums;
+        }
+
+        public async Task<int> GetMentorTotalReviews(int mentorId)
+        {
+            var totalReviews = await _dbContext.Reviews.Where(x => x.ToProfileId == mentorId).CountAsync();
+            return totalReviews;
+        }
+
+        public async Task<Dictionary<int, int>> GetMentorTotalReviews(int[] mentorIds) // 1, 2, 3, 4, 5
+        {
+            var totalReviews = await _dbContext.Reviews
+                .Where(x => mentorIds.Contains(x.ToProfileId)) // where Id in (1, 2, 3, 4, 5)
+                .GroupBy(x => x.ToProfileId)
+                .Select(x => new
+                {
+                    MentorId = x.Key,
+                    TotalReviews = x.Count()
+                })
+                .ToDictionaryAsync(key => key.MentorId, value => value.TotalReviews);
+
+            // 1 => 5
+            // 2 => 3
+            // 3 = 1
+
+            return totalReviews;
         }
     }
 

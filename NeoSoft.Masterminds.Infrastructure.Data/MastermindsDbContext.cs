@@ -22,10 +22,6 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
             OnMentorEntityCreating(modelBuilder);
             OnReviewEntityCreating(modelBuilder);
             OnFileEntityCreating(modelBuilder);
-
-            //OnAppUserEntityCreating(modelBuilder);
-
-
         }
 
         private void OnProfileEntityCreating(ModelBuilder modelBuilder)
@@ -49,7 +45,7 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
             modelBuilder.Entity<MentorEntity>().Property(x => x.HourlyRate).HasColumnType("Decimal(4,2)");
             modelBuilder.Entity<MentorEntity>()
                 .HasOne(me => me.Profile)
-                .WithOne()
+                .WithOne(x => x.Mentor)
                 .HasForeignKey<MentorEntity>(me => me.Id);
         }
         private void OnReviewEntityCreating(ModelBuilder modelBuilder)
@@ -59,7 +55,7 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
             modelBuilder.Entity<ReviewEntity>().Property(x => x.Text).IsRequired();
             modelBuilder
                 .Entity<ReviewEntity>()
-                 .HasOne(r => r.FromProfile)         //від кого
+                .HasOne(r => r.FromProfile)         //від кого
                 .WithMany(r => r.SentReviews)        // отримав    
                 .HasForeignKey(r => r.FromProfileId) // від кого айді   
                 .OnDelete(DeleteBehavior.NoAction);

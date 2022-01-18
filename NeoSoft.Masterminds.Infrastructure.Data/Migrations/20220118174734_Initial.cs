@@ -30,7 +30,6 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     PhotoId = table.Column<int>(nullable: true),
-                    MentorId = table.Column<int>(nullable: true),
                     ProfileFirstName = table.Column<string>(maxLength: 50, nullable: false),
                     ProfileLastName = table.Column<string>(maxLength: 50, nullable: false)
                 },
@@ -100,11 +99,6 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Profiles_MentorId",
-                table: "Profiles",
-                column: "MentorId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Profiles_PhotoId",
                 table: "Profiles",
                 column: "PhotoId",
@@ -125,30 +119,18 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Migrations
                 name: "IX_Reviews_ToProfileId",
                 table: "Reviews",
                 column: "ToProfileId");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Profiles_Mentors_MentorId",
-                table: "Profiles",
-                column: "MentorId",
-                principalTable: "Mentors",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Restrict);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_Mentors_Profiles_Id",
-                table: "Mentors");
-
             migrationBuilder.DropTable(
                 name: "Reviews");
 
             migrationBuilder.DropTable(
-                name: "Profiles");
+                name: "Mentors");
 
             migrationBuilder.DropTable(
-                name: "Mentors");
+                name: "Profiles");
 
             migrationBuilder.DropTable(
                 name: "Files");

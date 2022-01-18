@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using NeoSoft.Masterminds.Domain;
 using NeoSoft.Masterminds.Domain.Interfaces;
 using NeoSoft.Masterminds.Domain.Models;
+using NeoSoft.Masterminds.Domain.Models.Entities;
 using NeoSoft.Masterminds.Domain.Models.Models;
 using NeoSoft.Masterminds.Services.Interfaces;
 
@@ -21,20 +22,28 @@ namespace NeoSoft.Masterminds.Infrastructure.Business
 
         public async Task<MentorModel> GetMentorProfileById(int mentorId)
         {
-            var mentorEntity = await _mentorRepository.GetMentorProfileById(mentorId);
-            if (mentorEntity == null)
+            var mentor = await _mentorRepository.GetMentorProfileById(mentorId);
+            if (mentor == null)
                 return null;
 
-            var mentor = new MentorModel
+            var rating = await СalculateRating(mentorId);
+            
+            var mentorModel = ConvertEntityModelToMentorModel(mentor, rating);
+            return mentorModel;
+
+        }
+        private MentorModel ConvertEntityModelToMentorModel(MentorEntity mentor, double rating)
+        {
+            return new MentorModel
             {
-                Id = mentorEntity.Id,
-                FirstName = mentorEntity.Profile.ProfileFirstName,
-                LastName = mentorEntity.Profile.ProfileLastName,
-                Description = mentorEntity.Description,
-                Specialty = mentorEntity.Specialty,
-                HourlyRate = mentorEntity.HourlyRate,
-                ProfessionalAspects = mentorEntity.ProfessionalAspects.Split(", ").ToList(),
-                //Reviews = mentorEntity.Reviews.Select(x => new ReviewModel
+                Id = mentor.Id,
+                FirstName = mentor.Profile.ProfileFirstName,
+                LastName = mentor.Profile.ProfileLastName,
+                Description = mentor.Description,
+                Specialty = mentor.Specialty,
+                HourlyRate = mentor.HourlyRate,
+                ProfessionalAspects = mentor.ProfessionalAspects.Split(", ").ToList(),
+                //Reviews = mentor.Reviews.Select(x => new ReviewModel
                 //{
                 //    Id = x.Id,
                 //    FirstName = x.SentReviews.FirstName,
@@ -44,9 +53,6 @@ namespace NeoSoft.Masterminds.Infrastructure.Business
                 //    Rating = x.Rating
                 //}).ToList(),
             };
-
-            return new MentorModel();
-            
         }
         public async Task<List<MentorListModel>> Get(GetFilter filter)
         {
@@ -68,7 +74,20 @@ namespace NeoSoft.Masterminds.Infrastructure.Business
             return list;
         }
 
+        private static double СalculateRating(int totalReviews, double ratingSum)
+        {
+            if (totalReviews == 0 || ratingSum == 0.0)
+                return 0.0;
 
+            return Math.Max(Math.Round(ratingSum / totalReviews * 2, MidpointRounding.AwayFromZero) / 2, 0); // 3.2132 => 3.5 // 2.5 // 1.5
+        }
+        private async Task<double> СalculateRating(int mentorId)
+        {
+            var totalReviews = await _mentorRepository.GetMentorTotalReviews(mentorId);
+            var ratingSum = await _mentorRepository.GetMentorRatingSum(mentorId);
+
+            return СalculateRating(totalReviews, ratingSum);
+        }
 
     }
 }

@@ -11,5 +11,14 @@ namespace NeoSoft.Masterminds.Domain.Interfaces
         Task<MentorEntity> GetMentorProfileById(int mentorId);
 
         Task<List<MentorEntity>> Get(GetFilter filter);
+        Task<double> GetMentorRatingSum(int mentorId);
+
+        Task<Dictionary<int, double>> GetMentorRatingSum(int[] mentorIds);
+
+        Task<int> GetMentorTotalReviews(int mentorId);
+
+        Task<Dictionary<int, int>> GetMentorTotalReviews(int[] mentorIds);
+
+
     }
 }

@@ -88,9 +88,6 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("MentorId")
-                        .HasColumnType("int");
-
                     b.Property<int?>("PhotoId")
                         .HasColumnType("int");
 
@@ -105,8 +102,6 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Migrations
                         .HasMaxLength(50);
 
                     b.HasKey("Id");
-
-                    b.HasIndex("MentorId");
 
                     b.HasIndex("PhotoId")
                         .IsUnique()
@@ -152,7 +147,7 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Migrations
             modelBuilder.Entity("NeoSoft.Masterminds.Domain.Models.Entities.MentorEntity", b =>
                 {
                     b.HasOne("NeoSoft.Masterminds.Domain.Models.Entities.ProfileEntity", "Profile")
-                        .WithOne()
+                        .WithOne("Mentor")
                         .HasForeignKey("NeoSoft.Masterminds.Domain.Models.Entities.MentorEntity", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -160,10 +155,6 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("NeoSoft.Masterminds.Domain.Models.Entities.ProfileEntity", b =>
                 {
-                    b.HasOne("NeoSoft.Masterminds.Domain.Models.Entities.MentorEntity", "Mentor")
-                        .WithMany()
-                        .HasForeignKey("MentorId");
-
                     b.HasOne("NeoSoft.Masterminds.Domain.Models.Entities.FileEntity", "Photo")
                         .WithOne()
                         .HasForeignKey("NeoSoft.Masterminds.Domain.Models.Entities.ProfileEntity", "PhotoId");
