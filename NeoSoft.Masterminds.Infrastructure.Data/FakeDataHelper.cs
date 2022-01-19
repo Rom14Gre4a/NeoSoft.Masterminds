@@ -22,7 +22,7 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
             _context = contenxt;
         }
 
-        public  async Task SeedFakeData()
+        public async Task SeedFakeData()
         {
             var anyMentors = await _context.Mentors.AnyAsync();
 
@@ -45,10 +45,11 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
             .RuleFor(m => m.Profile, f => new ProfileEntity
             {
                 ProfileFirstName = f.Name.FirstName(),
-                ProfileLastName = f.Name.LastName()
+                ProfileLastName = f.Name.LastName(),
+                Photo = GetProfilePhoto(f.Random.Int(0, ExistingImages.Length - 1))
             })
             .RuleFor(m => m.Reviews, f => reviews.ToList());
-            
+
 
             _mentors = mentorFaker.Generate(mentorCount);
 
@@ -73,12 +74,32 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
 
             return reviewFaker.Generate(fakeNumber);
         }
- //.RuleFor(x => x.ToProfile, f => new ProfileEntity
- //               {
- //                   ProfileFirstName = f.Person.FirstName,
- //                   ProfileLastName = f.Person.LastName,
- //                   //photo
- //               })
-    }
+        private static FileEntity GetProfilePhoto(int index)
+        {
+            if (index > 7)
+                return null;
 
+            return new FileEntity
+            {
+                InitialName = $"ProfilePhoto_{index}",
+                Name = ExistingImages[index],
+                ContentType = index == 4 ? "image/jpeg" : "image/png",
+                Extension = index == 4 ? "jpg" : "png",
+                FileType = FileType.ProfilePhoto
+            };
+
+        }
+        private static readonly string[] ExistingImages = new[]
+        {
+            "53387f51-b2dc-4dea-8b79-74273a8145ce",
+            "12b0ef8e-59bd-4334-8aa6-01af5dc065fd",
+            "3d19de4c-20c0-418f-9329-0c03365a2f77",      
+            "5fd7e89c-319d-492b-848c-f5ca89f114a1",
+            "9387a87f-9c25-4467-aa8b-ba470976fde5",
+            "b345f041-d817-44b3-b5cb-4605be6f1987",
+            "c289844f-a838-4c9d-a03f-5354f0a6b070",
+            "e8b56e48-ac8b-4113-9372-18e5598ba662",
+        };
+
+    }
 }

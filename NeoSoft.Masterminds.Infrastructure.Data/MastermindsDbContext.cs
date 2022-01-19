@@ -1,5 +1,7 @@
 ﻿using NeoSoft.Masterminds.Domain.Models.Entities;
 using Microsoft.EntityFrameworkCore;
+using NeoSoft.Masterminds.Domain.Models.Enums;
+using NeoSoft.Masterminds.Domain.Models;
 
 namespace NeoSoft.Masterminds.Infrastructure.Data
 {
@@ -74,7 +76,17 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
             modelBuilder.Entity<FileEntity>().Property(x => x.Name).IsRequired().HasMaxLength(100);
             modelBuilder.Entity<FileEntity>().Property(x => x.InitialName).IsRequired().HasMaxLength(100);
             modelBuilder.Entity<FileEntity>().Property(x => x.ContentType).IsRequired().HasMaxLength(100);
-            modelBuilder.Entity<FileEntity>().Property(x => x.Extention).IsRequired().HasMaxLength(100);
+            modelBuilder.Entity<FileEntity>().Property(x => x.Extension).IsRequired().HasMaxLength(100);
+
+            //modelBuilder.Entity<FileEntity>().HasData(new FileEntity
+            //{
+            //    Id = Constants.UnknownImageId,
+            //    //Name = Constants.UnknownImageName,
+            //    InitialName = "Unknown",
+            //    FileType = FileType.ProfilePhoto,
+            //    Extension = "jpg",
+            //    ContentType = "image/jpeg"
+            //});
         }
 
     }

@@ -24,7 +24,7 @@ namespace NeoSoft.Masterminds.Models
 
         public string Description { get; set; }
 
-        //public List<ReviewApiModel> Reviews { get; set; }
+        public List<ReviewView> Reviews { get; set; }
     }
 }
 

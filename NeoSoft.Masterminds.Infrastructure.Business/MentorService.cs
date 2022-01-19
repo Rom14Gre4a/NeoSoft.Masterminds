@@ -43,15 +43,15 @@ namespace NeoSoft.Masterminds.Infrastructure.Business
                 Specialty = mentor.Specialty,
                 HourlyRate = mentor.HourlyRate,
                 ProfessionalAspects = mentor.ProfessionalAspects.Split(", ").ToList(),
-                //Reviews = mentor.Reviews.Select(x => new ReviewModel
-                //{
-                //    Id = x.Id,
-                //    FirstName = x.SentReviews.FirstName,
-                //    LastName = x.SentReviews.LastName,
-                //    ProfilePhotoId = x.Owner.PhotoId ?? Constants.UnknownImageId,
-                //    Text = x.Text,
-                //    Rating = x.Rating
-                //}).ToList(),
+                Reviews = mentor.Reviews.Select(x => new ReviewModel
+                {
+                    Id = x.Id,
+                    FirstName = x.FromProfile.ProfileFirstName,
+                    LastName = x.FromProfile.ProfileLastName,
+                    //ProfilePhotoId = x.FromProfile.PhotoId ?? Constants.UnknownImageId,
+                    Text = x.Text,
+                    Rating = x.Rating
+                }).ToList(),
             };
         }
         public async Task<List<MentorListModel>> Get(GetFilter filter)

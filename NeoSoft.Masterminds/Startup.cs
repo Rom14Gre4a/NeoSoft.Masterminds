@@ -33,6 +33,9 @@ namespace NeoSoft.Masterminds
             services.AddScoped<IMentorRepository, MentorRepository>();
             services.AddScoped<IMentorService, MentorService>();
 
+            services.AddScoped<IFileService, FileService>();
+            services.AddScoped<IFileRepository, FileRepository>();
+
             services.AddControllers()
                  .AddJsonOptions(options =>
                  {
