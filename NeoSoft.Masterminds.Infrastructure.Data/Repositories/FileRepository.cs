@@ -16,12 +16,20 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Repositories
         {
             _dbContext = dbContext;
         }
-        public async Task<FileEntity> Get(int fileId)
+
+        public async Task<FileEntity> GetAsync(int fileId)
         {
             var file = await _dbContext.Files.FirstOrDefaultAsync(x => x.Id == fileId);
             return file;
         }
-        public async Task<int> Save(FileEntity file)
+
+        public async Task<FileEntity> GetAsync(string fileName)
+        {
+            var file = await _dbContext.Files.FirstOrDefaultAsync(x => x.Name == fileName);
+            return file;
+        }
+
+        public async Task<int> SaveAsync(FileEntity file)
         {
             await _dbContext.Files.AddAsync(file);
             await _dbContext.SaveChangesAsync();

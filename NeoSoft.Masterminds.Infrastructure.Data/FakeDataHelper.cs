@@ -14,7 +14,7 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
     public class FakeDataHelper
 
     {
-        private List<MentorEntity> _mentors { get; set; }
+        private List<MentorEntity> Mentors { get; set; }
         private readonly MastermindsDbContext _context;
 
         public FakeDataHelper(MastermindsDbContext contenxt)
@@ -51,9 +51,9 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
             .RuleFor(m => m.Reviews, f => reviews.ToList());
 
 
-            _mentors = mentorFaker.Generate(mentorCount);
+            Mentors = mentorFaker.Generate(mentorCount);
 
-            await _context.AddRangeAsync(_mentors);
+            await _context.AddRangeAsync(Mentors);
         }
         private List<ReviewEntity> GenerateReviews(int fakeNumber = 50)
         {

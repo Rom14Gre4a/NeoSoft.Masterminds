@@ -15,7 +15,7 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Migrations
                     Name = table.Column<string>(maxLength: 100, nullable: false),
                     InitialName = table.Column<string>(maxLength: 100, nullable: false),
                     ContentType = table.Column<string>(maxLength: 100, nullable: false),
-                    Extention = table.Column<string>(maxLength: 100, nullable: false),
+                    Extension = table.Column<string>(maxLength: 100, nullable: false),
                     FileType = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
@@ -97,6 +97,11 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Migrations
                         principalTable: "Profiles",
                         principalColumn: "Id");
                 });
+
+            migrationBuilder.InsertData(
+                table: "Files",
+                columns: new[] { "Id", "ContentType", "Extension", "FileType", "InitialName", "Name" },
+                values: new object[] { 1, "image/jpeg", "jpg", 1, "Unknown", "13666186-686e-466e-a5a8-ca06d4db7ad5" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Profiles_PhotoId",

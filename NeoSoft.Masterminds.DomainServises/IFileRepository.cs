@@ -8,8 +8,10 @@ namespace NeoSoft.Masterminds.Domain.Interfaces
 {
     public interface IFileRepository
     {
-        Task<FileEntity> Get(int fileId);
+        Task<FileEntity> GetAsync(int fileId);
 
-        Task<int> Save(FileEntity file);
+        Task<int> SaveAsync(FileEntity file);
+
+        Task<FileEntity> GetAsync(string fileName);
     }
 }

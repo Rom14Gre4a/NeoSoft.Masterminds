@@ -78,15 +78,15 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
             modelBuilder.Entity<FileEntity>().Property(x => x.ContentType).IsRequired().HasMaxLength(100);
             modelBuilder.Entity<FileEntity>().Property(x => x.Extension).IsRequired().HasMaxLength(100);
 
-            //modelBuilder.Entity<FileEntity>().HasData(new FileEntity
-            //{
-            //    Id = Constants.UnknownImageId,
-            //    //Name = Constants.UnknownImageName,
-            //    InitialName = "Unknown",
-            //    FileType = FileType.ProfilePhoto,
-            //    Extension = "jpg",
-            //    ContentType = "image/jpeg"
-            //});
+            modelBuilder.Entity<FileEntity>().HasData(new FileEntity
+            {
+                Id = Constants.UnknownImageId,
+                Name = Constants.UnknownImageName,
+                InitialName = "Unknown",
+                FileType = FileType.ProfilePhoto,
+                Extension = "jpg",
+                ContentType = "image/jpeg"
+            });
         }
 
     }

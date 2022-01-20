@@ -31,7 +31,7 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Migrations
                         .HasColumnType("nvarchar(100)")
                         .HasMaxLength(100);
 
-                    b.Property<string>("Extention")
+                    b.Property<string>("Extension")
                         .IsRequired()
                         .HasColumnType("nvarchar(100)")
                         .HasMaxLength(100);
@@ -52,6 +52,17 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Files");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            ContentType = "image/jpeg",
+                            Extension = "jpg",
+                            FileType = 1,
+                            InitialName = "Unknown",
+                            Name = "13666186-686e-466e-a5a8-ca06d4db7ad5"
+                        });
                 });
 
             modelBuilder.Entity("NeoSoft.Masterminds.Domain.Models.Entities.MentorEntity", b =>

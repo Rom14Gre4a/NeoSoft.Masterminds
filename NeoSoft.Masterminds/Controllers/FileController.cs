@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using NeoSoft.Masterminds.Common.Extensions;
 using NeoSoft.Masterminds.Domain.Models.Enums;
 using NeoSoft.Masterminds.Domain.Models.Models;
 using NeoSoft.Masterminds.Models;
@@ -10,8 +11,8 @@ using System.Threading.Tasks;
 
 namespace NeoSoft.Masterminds.Controllers
 {
-        [Route("api/file")]
-        [ApiController]
+    [Route("api/file")]
+    [ApiController]
     public class FileController : Controller
     {
         private readonly IWebHostEnvironment _appEnvironment;
@@ -25,36 +26,40 @@ namespace NeoSoft.Masterminds.Controllers
         [HttpPost("upload-profile-photo")]
         public async Task<ActionResult<int>> UploadProfilePhoto([FromForm] UploadProfilePhoto uploadProfilePhoto)
         {
-          var fileId = 0;
+            var fileId = 0;
 
-           try
-           {
+            try
+            {
                 if (uploadProfilePhoto.Avatar.Length > 0)
                 {
-                    using var fileStream = new MemoryStream();
-                    uploadProfilePhoto.Avatar.CopyTo(fileStream);
-                    var fileBytes = fileStream.ToArray();
-
-                    var initialName = uploadProfilePhoto.Avatar.FileName.Split(".")[0];
-                    var extension = uploadProfilePhoto.Avatar.FileName.Split(".")[1];
-
-                    fileId = await _fileService.UploadImageToFileSystem(new UploadImageToFileModel
-                    {
-                        File = fileBytes,
-                        BasePath = _appEnvironment.WebRootPath,
-                        InitialName = initialName,
-                        ContentType = uploadProfilePhoto.Avatar.ContentType,
-                        Extension = extension,
-                        FileType = FileType.ProfilePhoto,
-                    });
+                    var fileBytes = HttpRequestExtension.GetFileToByte(uploadProfilePhoto.Avatar);
+                    fileId = await _fileService.ConvertToUploadImageFileModel(uploadProfilePhoto.Avatar, fileBytes, _appEnvironment.WebRootPath);
                 }
                 return fileId;
 
             }
             catch (Exception ex)
             {
-            return fileId;
-           }
+                return fileId;
+            }
+        }
+
+        [HttpGet("{fileId:int}")]
+        public async Task<ActionResult> GetFile(int fileId)
+        {
+            try
+            {
+                var imageFile = await _fileService.DownloadFileFromFileSystem(fileId, _appEnvironment.WebRootPath);
+                return File(imageFile.File, imageFile.ContentType, $"{imageFile.Name}.{imageFile.Extension}");
+            }
+            catch (FileNotFoundException ex)
+            {
+                return NotFound($"File with id '{fileId}' not found");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal server error");
+            }
         }
 
     }
