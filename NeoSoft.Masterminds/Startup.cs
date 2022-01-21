@@ -61,7 +61,7 @@ namespace NeoSoft.Masterminds
             var databaseMigrateTask = Task.Run(() => context.Database.MigrateAsync());
             databaseMigrateTask.Wait();
 
-            if (env.IsDevelopment())
+            if (env.IsDevelopment() || env.IsProduction())
             {
                 var seedFakeDataTask = Task.Run(() => new FakeDataHelper(context).SeedFakeData());
                 seedFakeDataTask.Wait();

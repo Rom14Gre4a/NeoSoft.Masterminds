@@ -21,9 +21,16 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Repositories
             _dbContext = dbContext;
         }
         public async Task<MentorEntity> GetMentorProfileById(int mentorId)
-        {  
-            var mentor = await _dbContext.Mentors.Include(p => p.Profile).ThenInclude(r => r.SentReviews)
-                .FirstOrDefaultAsync(m => m.Id == mentorId);
+        {
+            //var mentor = await _dbContext.Mentors.Include(p => p.Profile).ThenInclude(r => r.SentReviews)
+            //    .FirstOrDefaultAsync(m => m.Id == mentorId);
+            var mentor = await _dbContext
+                .Mentors
+                 .Include(x => x.Reviews)
+                 .Include(x => x.Profile).ThenInclude(x => x.SentReviews) 
+              
+                .FirstOrDefaultAsync(x => x.Id == mentorId);
+
             return mentor;
         }
         public async Task<List<MentorEntity>> Get(GetFilter filter)

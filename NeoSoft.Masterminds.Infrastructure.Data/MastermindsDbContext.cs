@@ -24,6 +24,7 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
             OnMentorEntityCreating(modelBuilder);
             OnReviewEntityCreating(modelBuilder);
             OnFileEntityCreating(modelBuilder);
+
         }
 
         private void OnProfileEntityCreating(ModelBuilder modelBuilder)

@@ -33,7 +33,7 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
             }
         }
 
-        private async Task CreateMentorsAndProfilesAsync(int mentorCount)
+        private async Task CreateMentorsAndProfilesAsync(int mentorCount = 50)
         {
             var reviews = GenerateReviews();
 

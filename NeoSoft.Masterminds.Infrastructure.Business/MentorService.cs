@@ -46,9 +46,9 @@ namespace NeoSoft.Masterminds.Infrastructure.Business
                 Reviews = mentor.Reviews.Select(x => new ReviewModel
                 {
                     Id = x.Id,
-                    FirstName = x.FromProfile.ProfileFirstName,
-                    LastName = x.FromProfile.ProfileLastName,
-                    //ProfilePhotoId = x.FromProfile.PhotoId ?? Constants.UnknownImageId,
+                    FirstName = x.ToProfile.ProfileFirstName,
+                    LastName = x.ToProfile.ProfileLastName,
+                    ProfilePhotoId = x.ToProfile.PhotoId ?? Constants.UnknownImageId,
                     Text = x.Text,
                     Rating = x.Rating
                 }).ToList(),

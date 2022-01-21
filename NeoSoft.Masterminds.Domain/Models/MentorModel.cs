@@ -12,7 +12,7 @@ namespace NeoSoft.Masterminds.Domain
         public string LastName { get; set; }
         public string Specialty { get; set; }
         public double Rating { get; set; }
-        public int RewiewsTotalCount { get; set; }
+        public int ReviewsTotalCount { get; set; }
         public decimal HourlyRate { get; set; }
         public List<string> ProfessionalAspects { get; set; }
         public string Description { get; set; }

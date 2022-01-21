@@ -29,8 +29,8 @@ namespace NeoSoft.Masterminds.Controllers
         public async Task<ActionResult<MentorView>> GetMentorProfileById( int mentorId)
         {
             var mentorModel = await _mentorService.GetMentorProfileById(mentorId);
-            if (mentorModel == null)
-                return null;
+            //if (mentorModel == null)
+            //    return null;
             return new MentorView
             {
                 Id = mentorModel.Id,
@@ -40,7 +40,18 @@ namespace NeoSoft.Masterminds.Controllers
                 Description = mentorModel.Description,
                 HourlyRate = mentorModel.HourlyRate,
                 Rating = mentorModel.Rating,
-
+                Reviews = mentorModel.Reviews.Select(x => new ReviewView
+                {
+                    Id = x.Id,
+                    FirstName = x.FirstName,
+                    LastName = x.LastName,
+                    Rating = x.Rating,
+                    Text = x.Text,
+                    ProfilePhoto = GetPhotoPath(x.ProfilePhotoId)
+                }).ToList(),
+                ProfessionalAspects = mentorModel.ProfessionalAspects,
+                ReviewsTotalCount = mentorModel.ReviewsTotalCount,
+                ProfilePhoto = GetPhotoPath(mentorModel.ProfilePhotoId)
             };
         }
 
@@ -64,8 +75,14 @@ namespace NeoSoft.Masterminds.Controllers
                 LastName = x.LastName,
                 Specialty = x.Specialty,
                 Rating = x.Rating,
-                //ProfilePhoto = GetPhotoPath(x.ProfilePhotoId)
+                ProfilePhoto = GetPhotoPath(x.ProfilePhotoId)
             }).ToList();
+        }
+
+        private string GetPhotoPath(int profilePhotoId)
+        {
+            // https://localhost:5001/api/file/3
+            return $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host.Value}/api/file/{profilePhotoId}";
         }
     }
 }

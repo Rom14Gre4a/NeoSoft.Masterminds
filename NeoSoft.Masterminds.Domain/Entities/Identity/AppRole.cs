@@ -1,9 +1,9 @@
-﻿//using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 
-//namespace NeoSoft.Masterminds.Domain.Models.Entities.Identity
-//{
-//    public class AppRole : IdentityRole<int>
-//    {
+namespace NeoSoft.Masterminds.Domain.Models.Entities.Identity
+{
+    public class AppRole : IdentityRole<int>
+    {
 
-//    }
-//}
+    }
+}

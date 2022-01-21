@@ -2,8 +2,8 @@
 
 namespace NeoSoft.Masterminds.Domain.Models.Entities.Identity
 {
-    public class AppUser : IdentityUser<int>
+    public class AppIdentityUserRole : IdentityUserRole<int>
     {
-        public ProfileEntity Profile { get; set; }
+
     }
 }
