@@ -17,5 +17,6 @@ namespace NeoSoft.Masterminds.Domain.Models.Entities
         public virtual IList<ReviewEntity> SentReviews { get; set; }
         public virtual IList<ReviewEntity> RecivedReviews { get; set; }
 
+       
     }
 }

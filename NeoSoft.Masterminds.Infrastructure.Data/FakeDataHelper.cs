@@ -1,6 +1,8 @@
 ﻿using Bogus;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using NeoSoft.Masterminds.Domain.Models.Entities;
+using NeoSoft.Masterminds.Domain.Models.Entities.Identity;
 using NeoSoft.Masterminds.Domain.Models.Enums;
 using System;
 using System.Collections.Generic;
@@ -14,6 +16,17 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
     public class FakeDataHelper
 
     {
+        private static readonly string[] ExistingImages = new[]
+        {
+            "53387f51-b2dc-4dea-8b79-74273a8145ce",
+            "12b0ef8e-59bd-4334-8aa6-01af5dc065fd",
+            "3d19de4c-20c0-418f-9329-0c03365a2f77",
+            "5fd7e89c-319d-492b-848c-f5ca89f114a1",
+            "9387a87f-9c25-4467-aa8b-ba470976fde5",
+            "b345f041-d817-44b3-b5cb-4605be6f1987",
+            "c289844f-a838-4c9d-a03f-5354f0a6b070",
+            "e8b56e48-ac8b-4113-9372-18e5598ba662",
+        };
         private List<MentorEntity> Mentors { get; set; }
         private readonly MastermindsDbContext _context;
 
@@ -22,58 +35,31 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
             _context = contenxt;
         }
 
-        public async Task SeedFakeData()
+        public async Task SeedFakeData(UserManager<AppUser> userManager)
         {
             var anyMentors = await _context.Mentors.AnyAsync();
 
             if (!anyMentors)
             {
-                await CreateMentorsAndProfilesAsync(100);
+
+                var mentors = GenerateMentors(50);
+                foreach (var mentor in mentors)
+                    await userManager.CreateAsync(mentor);
+
+                var reviewers = GenerateReviewers(50);
+                foreach (var reviewer in reviewers)
+                    await userManager.CreateAsync(reviewer);
+
+                var reviews = GenerateReviews(mentors.Select(x => x.Id).ToList(), reviewers.Select(x => x.Id).ToList());
+
+                await _context.Reviews.AddRangeAsync(reviews);
                 await _context.SaveChangesAsync();
             }
         }
 
-        private async Task CreateMentorsAndProfilesAsync(int mentorCount = 50)
-        {
-            var reviews = GenerateReviews();
-
-            var mentorFaker = new Faker<MentorEntity>()
-            .RuleFor(m => m.HourlyRate, f => f.Random.Int(5, 50))
-            .RuleFor(m => m.Description, f => f.Lorem.Text())
-            .RuleFor(m => m.ProfessionalAspects, f => f.Lorem.Word())
-            .RuleFor(m => m.Specialty, f => f.Name.JobTitle())
-            .RuleFor(m => m.Profile, f => new ProfileEntity
-            {
-                ProfileFirstName = f.Name.FirstName(),
-                ProfileLastName = f.Name.LastName(),
-                Photo = GetProfilePhoto(f.Random.Int(0, ExistingImages.Length - 1))
-            })
-            .RuleFor(m => m.Reviews, f => reviews.ToList());
 
 
-            Mentors = mentorFaker.Generate(mentorCount);
-
-            await _context.AddRangeAsync(Mentors);
-        }
-        private List<ReviewEntity> GenerateReviews(int fakeNumber = 50)
-        {
-            var reviewFaker = new Faker<ReviewEntity>()
-                .RuleFor(x => x.FromProfile, f => new ProfileEntity
-                {
-                    ProfileFirstName = f.Person.FirstName,
-                    ProfileLastName = f.Person.LastName,
-                })
-                .RuleFor(x => x.ToProfile, f => new ProfileEntity
-                {
-                    ProfileFirstName = f.Person.FirstName,
-                    ProfileLastName = f.Person.LastName,
-                })
-                .RuleFor(x => x.Rating, f => f.Random.Double(1, 5))
-                .RuleFor(x => x.Text, f => f.Random.Words());
-
-
-            return reviewFaker.Generate(fakeNumber);
-        }
+        
         private static FileEntity GetProfilePhoto(int index)
         {
             if (index > 7)
@@ -89,17 +75,97 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
             };
 
         }
-        private static readonly string[] ExistingImages = new[]
-        {
-            "53387f51-b2dc-4dea-8b79-74273a8145ce",
-            "12b0ef8e-59bd-4334-8aa6-01af5dc065fd",
-            "3d19de4c-20c0-418f-9329-0c03365a2f77",      
-            "5fd7e89c-319d-492b-848c-f5ca89f114a1",
-            "9387a87f-9c25-4467-aa8b-ba470976fde5",
-            "b345f041-d817-44b3-b5cb-4605be6f1987",
-            "c289844f-a838-4c9d-a03f-5354f0a6b070",
-            "e8b56e48-ac8b-4113-9372-18e5598ba662",
-        };
 
+        private List<AppUser> GenerateMentors(int fakeNumber = 50)
+        {
+            var mentors = new List<AppUser>();
+
+            for (int i = 0; i < fakeNumber; i++)
+            {
+                var faker = new Faker();
+
+                var email = faker.Person.Email;
+
+                mentors.Add(new AppUser
+                {
+                    UserName = email,
+                    Email = email,
+                    Profile = new ProfileEntity
+                    {
+                        ProfileFirstName = faker.Person.FirstName,
+                        ProfileLastName = faker.Person.LastName,
+                        Photo = GetProfilePhoto(faker.Random.Int(0, ExistingImages.Length - 1)),
+                        Mentor = new MentorEntity
+                        {
+                            Specialty = faker.Person.Company.CatchPhrase,
+                            HourlyRate = faker.Random.Decimal(4, 70),
+                            ProfessionalAspects = string.Join(", ", faker.Random.WordsArray(1, 4)),
+                            Description = faker.Lorem.Paragraph(faker.Random.Int(1, 3)),
+                        }
+                    }
+                });
+            }
+            return mentors;
+
+        }
+        public static List<AppUser> GenerateReviewers(int fakeNumber = 50)
+        {
+            var reviewers = new List<AppUser>();
+
+            for (int i = 0; i < fakeNumber; i++)
+            {
+                var faker = new Faker();
+
+                var email = faker.Person.Email;
+
+                reviewers.Add(new AppUser
+                {
+                    UserName = email,
+                    Email = email,
+                    Profile = new ProfileEntity
+                    {
+                        ProfileFirstName = faker.Person.FirstName,
+                        ProfileLastName = faker.Person.LastName,
+                        Photo = GetProfilePhoto(faker.Random.Int(0, ExistingImages.Length - 1))
+                    }
+                });
+            }
+
+            return reviewers;
+        }
+        public static List<ReviewEntity> GenerateReviews(List<int> mentorIds, List<int> reviewerIds)
+        {
+            var reviews = new List<ReviewEntity>();
+
+            var randomizer = new Randomizer();
+            var randomMentorIds = mentorIds.Skip(randomizer.Int(0, mentorIds.Count)).Take(randomizer.Int(10, 40)).ToList();
+
+            foreach (var randomMentorId in randomMentorIds)
+            {
+                var reviewsPart = GenerateReviews(randomMentorId, reviewerIds, randomizer.Int(1, 6));
+                reviews.AddRange(reviewsPart);
+            }
+
+            return reviews;
+        }
+
+        public static List<ReviewEntity> GenerateReviews(int mentorId, List<int> reviewerIds, int fakeNumber = 5)
+        {
+            var reviewFaker = new Faker<ReviewEntity>()
+                .RuleFor(x => x.FromProfile, f => new ProfileEntity
+                        {
+                            ProfileFirstName = f.Person.FirstName,
+                            ProfileLastName = f.Person.LastName,
+                        })
+                        .RuleFor(x => x.ToProfile, f => new ProfileEntity
+                        {
+                            ProfileFirstName = f.Person.FirstName,
+                            ProfileLastName = f.Person.LastName,
+                        })
+                .RuleFor(x => x.Rating, f => f.Random.Double(1, 5))
+                .RuleFor(x => x.Text, f => f.Random.Words());
+
+            return reviewFaker.Generate(fakeNumber);
+        }
     }
 }
