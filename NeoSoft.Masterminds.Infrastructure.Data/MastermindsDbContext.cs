@@ -2,10 +2,12 @@
 using Microsoft.EntityFrameworkCore;
 using NeoSoft.Masterminds.Domain.Models.Enums;
 using NeoSoft.Masterminds.Domain.Models;
+using NeoSoft.Masterminds.Domain.Models.Entities.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace NeoSoft.Masterminds.Infrastructure.Data
 {
-    public class MastermindsDbContext : DbContext
+    public class MastermindsDbContext : IdentityDbContext<AppUser, AppRole, int, AppIdentityUserClaim, AppIdentityUserRole, AppIdentityUserLogin, AppIdentityRoleClaim, AppIdentityUserToken>
     {
         public MastermindsDbContext(DbContextOptions<MastermindsDbContext> options)
            : base(options)
@@ -25,6 +27,13 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
             OnReviewEntityCreating(modelBuilder);
             OnFileEntityCreating(modelBuilder);
 
+            OnAppUserEntityCreating(modelBuilder);
+            OnAppRoleEntityCreating(modelBuilder);
+            OnAppIdentityUserClaimCreating(modelBuilder);
+            OnAppIdentityUserRoleCreating(modelBuilder);
+            OnAppIdentityUserLoginCreating(modelBuilder);
+            OnAppIdentityRoleClaimCreating(modelBuilder);
+            OnAppIdentityUserTokenCreating(modelBuilder);
         }
 
         private void OnProfileEntityCreating(ModelBuilder modelBuilder)
@@ -89,6 +98,46 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
                 ContentType = "image/jpeg"
             });
         }
+        private void OnAppUserEntityCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<AppUser>().ToTable("AppUsers");
+
+            modelBuilder.Entity<AppUser>()
+                .HasOne(appUser => appUser.Profile)
+                .WithOne(p => p.AppUser)
+                .HasForeignKey<AppUser>(appUser => appUser.Id);
+        }
+
+        private void OnAppRoleEntityCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<AppRole>().ToTable("AppRoles");
+        }
+
+        private void OnAppIdentityUserClaimCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<AppIdentityUserClaim>().ToTable("AppIdentityUserClaims");
+        }
+
+        private void OnAppIdentityUserRoleCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<AppIdentityUserRole>().ToTable("AppIdentityUserRoles");
+        }
+
+        private void OnAppIdentityUserLoginCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<AppIdentityUserLogin>().ToTable("AppIdentityUserLogins");
+        }
+
+        private void OnAppIdentityRoleClaimCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<AppIdentityRoleClaim>().ToTable("AppIdentityRoleClaims");
+        }
+
+        private void OnAppIdentityUserTokenCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<AppIdentityUserToken>().ToTable("AppIdentityUserTokens");
+        }
+
 
     }
 }
