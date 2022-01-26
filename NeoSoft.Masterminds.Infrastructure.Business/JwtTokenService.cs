@@ -11,6 +11,7 @@ namespace NeoSoft.Masterminds.Infrastructure.Business
     public class JwtTokenService : IJwtTokenService
     {
         private readonly JwtTokenOptions _tokenOptions;
+        private string jwtToken;
 
         public JwtTokenService(IOptions<JwtTokenOptions> tokenOptions)
         {

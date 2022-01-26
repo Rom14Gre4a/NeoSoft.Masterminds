@@ -34,7 +34,6 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
             OnAppIdentityUserLoginCreating(modelBuilder);
             OnAppIdentityRoleClaimCreating(modelBuilder);
             OnAppIdentityUserTokenCreating(modelBuilder);
-            OnProfessionEntityCreating(modelBuilder);
         }
 
         private void OnProfileEntityCreating(ModelBuilder modelBuilder)
@@ -59,19 +58,15 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
             modelBuilder.Entity<MentorEntity>()
                 .HasOne(me => me.Profile)
                 .WithOne(x => x.Mentor)
-                .HasForeignKey<MentorEntity>(me => me.Id);
+                .HasForeignKey<MentorEntity>(me => me.Id)
+                .OnDelete(DeleteBehavior.Cascade);
           
+            modelBuilder.Entity<MentorEntity>()
+                .HasMany(s => s.Professions)
+                .WithMany(s => s.Mentors)
+                .UsingEntity(j => j.ToTable("Professions"));
         }
-        private void OnProfessionEntityCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<ProfessionEntity>().ToTable("Professions");
-            modelBuilder.Entity<ProfessionEntity>().HasKey(p => p.Id);
-            modelBuilder.Entity<ProfessionEntity>().Property(x => x.Name).IsRequired().HasMaxLength(50);
-            modelBuilder.Entity<ProfessionEntity>()
-                .HasMany(x => x.Name)
-                .WithMany(x => x.Mentors)
-                .HasForeignKey<ProfessionEntity>(me => me.Id);
-        }
+       
         private void OnReviewEntityCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<ReviewEntity>().ToTable("Reviews");

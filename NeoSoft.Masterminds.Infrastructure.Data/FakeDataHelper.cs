@@ -16,6 +16,22 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
     public class FakeDataHelper
 
     {
+        private static List<string> FakeProfessions = new List<string>()
+        {
+            "Psychologist",
+            "Designer",
+            "Marketeer",
+            "Financier",
+            "Economist",
+            "Engeneer",
+            "Developer",
+            "Human Resource manager",
+            "software tester",
+            "Architect",
+            "Analytics",
+            "Pharmacist",
+            "Producer",
+        };
         private static readonly string[] ExistingImages = new[]
         {
             "53387f51-b2dc-4dea-8b79-74273a8145ce",
@@ -38,8 +54,10 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
         public async Task SeedFakeData(UserManager<AppUser> userManager)
         {
             var anyMentors = await _context.Mentors.AnyAsync();
-
-            if (!anyMentors)
+            //var a = new Faker<ProfessionEntity>()
+            //    .StrictMode(true)
+            //    .RuleFor(x => x.Name
+                if (!anyMentors)
             {
 
                 var mentors = GenerateMentors(50);
@@ -50,7 +68,12 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
                 foreach (var reviewer in reviewers)
                     await userManager.CreateAsync(reviewer);
 
+
                 var reviews = GenerateReviews(mentors.Select(x => x.Id).ToList(), reviewers.Select(x => x.Id).ToList());
+                var fakeProfessions = GenerateProfessions();
+                await _context.AddRangeAsync(fakeProfessions);
+
+
 
                 await _context.Reviews.AddRangeAsync(reviews);
                 await _context.SaveChangesAsync();
@@ -76,7 +99,7 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
 
         }
 
-        private List<AppUser> GenerateMentors(int fakeNumber = 50)
+        private List<AppUser> GenerateMentors(List<ProfessionEntity> profi, int fakeNumber = 50)
         {
             var mentors = new List<AppUser>();
 
@@ -101,11 +124,33 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
                             HourlyRate = faker.Random.Decimal(4, 70),
                             ProfessionalAspects = string.Join(", ", faker.Random.WordsArray(1, 4)),
                             Description = faker.Lorem.Paragraph(faker.Random.Int(1, 3)),
+                            Professions = GetRandomProfessions() 
+                            // new List<ProfessionEntity>
+                            //{
+                            //    new ProfessionEntity
+                            //    {
+                            //        Name = 
+                            //    }
+                            //} //GetRandomProfessions(1, profi), 
                         }
-                    }
-                });
+                    },
+                }) ;
             }
             return mentors;
+
+        }
+        private static List<ProfessionEntity> GenerateProfessions()
+        {
+            List<ProfessionEntity> professions = new List<ProfessionEntity>();
+
+            foreach(var profession in FakeProfessions)
+            {
+                professions.Add(new ProfessionEntity
+                {
+                    Name = profession
+                });
+            }
+            return professions;
 
         }
         public static List<AppUser> GenerateReviewers(int fakeNumber = 50)
@@ -166,6 +211,20 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
                 .RuleFor(x => x.Text, f => f.Random.Words());
 
             return reviewFaker.Generate(fakeNumber);
+        }
+        private static List<ProfessionEntity> GetRandomProfessions(int number, List<ProfessionEntity> profi )
+        {
+            List<ProfessionEntity> professions = new List<ProfessionEntity>();
+            for (int i = 0; i < number; i++)
+            {
+                var faker = new Faker();
+                var profession = profi[faker.Random.Int(0, profi.Count)];
+                if (!professions.Contains(profession))
+                {
+                    professions.Add(profession);
+                }
+            }
+            return professions;
         }
     }
 }
