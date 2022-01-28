@@ -15,6 +15,8 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
         }
         public DbSet<ProfileEntity> Profiles { get; set; }
         public DbSet<MentorEntity> Mentors { get; set; }
+        public DbSet<ProfessionEntity> Professions { get; set; }
+        public DbSet<ProfessionalAspectEntity> ProfessionalAspects { get; set; }
         public DbSet<ReviewEntity> Reviews { get; set; }
         public DbSet<FileEntity> Files { get; set; }
 
@@ -26,6 +28,9 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
             OnMentorEntityCreating(modelBuilder);
             OnReviewEntityCreating(modelBuilder);
             OnFileEntityCreating(modelBuilder);
+
+            OnProfessionTableCreating(modelBuilder);
+            OnProfessionalAspectsTableCreating(modelBuilder);
 
             OnAppUserEntityCreating(modelBuilder);
             OnAppRoleEntityCreating(modelBuilder);
@@ -52,19 +57,28 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
             modelBuilder.Entity<MentorEntity>().ToTable("Mentors");
             modelBuilder.Entity<MentorEntity>().HasKey(p => p.Id);
             modelBuilder.Entity<MentorEntity>().Property(x => x.Specialty).IsRequired().HasMaxLength(50);
-            modelBuilder.Entity<MentorEntity>().Property(x => x.ProfessionalAspects).IsRequired().HasMaxLength(50);
+            modelBuilder.Entity<MentorEntity>().Property(x => x.Rating);
             modelBuilder.Entity<MentorEntity>().Property(x => x.Description).IsRequired();
-            modelBuilder.Entity<MentorEntity>().Property(x => x.HourlyRate).HasColumnType("Decimal(4,2)");
+            modelBuilder.Entity<MentorEntity>().Property(x => x.HourlyRate).HasColumnType("Decimal(8,2)");
             modelBuilder.Entity<MentorEntity>()
                 .HasOne(me => me.Profile)
                 .WithOne(x => x.Mentor)
                 .HasForeignKey<MentorEntity>(me => me.Id)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Cascade); 
+            
+            
           
             modelBuilder.Entity<MentorEntity>()
                 .HasMany(s => s.Professions)
                 .WithMany(s => s.Mentors)
-                .UsingEntity(j => j.ToTable("Professions"));
+                .UsingEntity(j => j.ToTable("MentorsProfessions"));
+            
+            modelBuilder.Entity<MentorEntity>()
+               .HasMany(s => s.ProfessionalAspects)
+               .WithMany(s => s.Mentors)
+               .UsingEntity(j => j.ToTable("MentorsProfessionalAspects"));
+
+           
         }
        
         private void OnReviewEntityCreating(ModelBuilder modelBuilder)
@@ -72,6 +86,7 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
             modelBuilder.Entity<ReviewEntity>().ToTable("Reviews");
             modelBuilder.Entity<ReviewEntity>().HasKey(p => p.Id);
             modelBuilder.Entity<ReviewEntity>().Property(x => x.Text).IsRequired();
+            modelBuilder.Entity<ReviewEntity>().Property(x => x.Rating).IsRequired().HasColumnType("decimal(4,2");
             modelBuilder
                 .Entity<ReviewEntity>()
                 .HasOne(r => r.FromProfile)         //від кого
@@ -105,6 +120,22 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
                 ContentType = "image/jpeg"
             });
         }
+        private void OnProfessionTableCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<ProfessionEntity>().ToTable("Professions");
+            modelBuilder.Entity<ProfessionEntity>().HasKey(p => p.Id);
+            modelBuilder.Entity<ProfessionEntity>().Property(p => p.Name)
+                .IsRequired().HasMaxLength(100);
+        }
+
+        private void OnProfessionalAspectsTableCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<ProfessionalAspectEntity>().ToTable("ProfessionalAspects");
+            modelBuilder.Entity<ProfessionalAspectEntity>().HasKey(p => p.Id);
+            modelBuilder.Entity<ProfessionalAspectEntity>().Property(p => p.Aspect)
+                .IsRequired().HasMaxLength(100);
+        }
+
         private void OnAppUserEntityCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<AppUser>().ToTable("AppUsers");
@@ -119,6 +150,7 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
         {
             modelBuilder.Entity<AppRole>().ToTable("AppRoles");
         }
+
 
         private void OnAppIdentityUserClaimCreating(ModelBuilder modelBuilder)
         {

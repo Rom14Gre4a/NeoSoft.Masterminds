@@ -9,11 +9,10 @@ namespace NeoSoft.Masterminds.Domain.Models.Entities
     {
         public string Specialty { get; set; }
         public decimal HourlyRate { get; set; }
-        public  string ProfessionalAspects { get; set; }
         public string Description { get; set; }
-        public ProfessionEntity Prof { get; set; }
+        public double Rating { get; set; }
+        public IList<ProfessionalAspectEntity> ProfessionalAspects { get; set; }
         public ProfileEntity Profile { get; set; }
-        public virtual IList<ReviewEntity> Reviews { get; set; }
-        public List<ProfessionEntity> Professions { get; set; }
+        public IList<ProfessionEntity> Professions { get; set; }
     }
 }

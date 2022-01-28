@@ -41,16 +41,17 @@ namespace NeoSoft.Masterminds.Infrastructure.Business
                 LastName = mentor.Profile.ProfileLastName,
                 Description = mentor.Description,
                 Specialty = mentor.Specialty,
+                Rating = mentor.Rating,
                 HourlyRate = mentor.HourlyRate,
-                ProfessionalAspects = mentor.ProfessionalAspects.Split(", ").ToList(),
-                Reviews = mentor.Reviews.Select(x => new ReviewModel
+                ProfessionalAspects = mentor.ProfessionalAspects.Select(x => x.Aspect).ToList(),
+                Reviews = mentor.Profile.RecivedReviews.Select(x => new ReviewModel
                 {
                     Id = x.Id,
                     FirstName = x.ToProfile.ProfileFirstName,
                     LastName = x.ToProfile.ProfileLastName,
                     ProfilePhotoId = x.ToProfile.PhotoId ?? Constants.UnknownImageId,
                     Text = x.Text,
-                    Rating = x.Rating
+                    
                 }).ToList(),
             };
         }

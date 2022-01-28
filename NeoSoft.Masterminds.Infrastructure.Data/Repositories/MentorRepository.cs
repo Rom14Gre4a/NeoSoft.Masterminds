@@ -26,7 +26,6 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Repositories
             //    .FirstOrDefaultAsync(m => m.Id == mentorId);
             var mentor = await _dbContext
                 .Mentors
-                 .Include(x => x.Reviews)
                  .Include(x => x.Profile).ThenInclude(x => x.SentReviews) 
               
                 .FirstOrDefaultAsync(x => x.Id == mentorId);
@@ -42,19 +41,19 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Repositories
                 switch (filter.OrderByProperty)
                 {
                     case nameof(MentorEntity.Profile.Id):
-                        baseQuery = filter.SortOrder == SortOrder.Asc
+                        baseQuery = filter.SortOrder == SortOrder.Ascending
                             ? baseQuery.OrderBy(x => x.Id)
                             : baseQuery.OrderByDescending(x => x.Id);
                         break;
 
                     case nameof(MentorEntity.Profile.ProfileLastName):
-                        baseQuery = filter.SortOrder == SortOrder.Asc
+                        baseQuery = filter.SortOrder == SortOrder.Ascending
                             ? baseQuery.OrderBy(x => x.Profile.ProfileLastName)
                             : baseQuery.OrderByDescending(x => x.Profile.ProfileLastName);
                         break;
 
                     default:
-                        baseQuery = filter.SortOrder == SortOrder.Asc
+                        baseQuery = filter.SortOrder == SortOrder.Ascending
                             ? baseQuery.OrderBy(x => x.Profile.ProfileFirstName)
                             : baseQuery.OrderByDescending(x => x.Profile.ProfileFirstName);
                         break;

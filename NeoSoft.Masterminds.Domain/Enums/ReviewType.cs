@@ -4,7 +4,7 @@ using System.Text;
 
 namespace NeoSoft.Masterminds.Domain.Models.Enums
 {
-    public enum ReivewType
+    public enum ReviewType
     {
         MentorReview = 1
     }
