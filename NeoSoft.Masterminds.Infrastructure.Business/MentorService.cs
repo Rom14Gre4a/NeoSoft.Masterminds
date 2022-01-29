@@ -6,6 +6,7 @@ using NeoSoft.Masterminds.Domain;
 using NeoSoft.Masterminds.Domain.Interfaces;
 using NeoSoft.Masterminds.Domain.Models;
 using NeoSoft.Masterminds.Domain.Models.Entities;
+using NeoSoft.Masterminds.Domain.Models.Filters;
 using NeoSoft.Masterminds.Domain.Models.Models;
 using NeoSoft.Masterminds.Services.Interfaces;
 
@@ -40,10 +41,10 @@ namespace NeoSoft.Masterminds.Infrastructure.Business
                 FirstName = mentor.Profile.ProfileFirstName,
                 LastName = mentor.Profile.ProfileLastName,
                 Description = mentor.Description,
-                Specialty = mentor.Specialty,
                 Rating = mentor.Rating,
                 HourlyRate = mentor.HourlyRate,
                 ProfessionalAspects = mentor.ProfessionalAspects.Select(x => x.Aspect).ToList(),
+                Professions = mentor.Professions.Select(x => x.Name).ToList(),
                 Reviews = mentor.Profile.RecivedReviews.Select(x => new ReviewModel
                 {
                     Id = x.Id,
@@ -66,9 +67,9 @@ namespace NeoSoft.Masterminds.Infrastructure.Business
                     Id = mentor.Id,
                     FirstName = mentor.Profile.ProfileFirstName,
                     LastName = mentor.Profile.ProfileLastName,
-                    Specialty = mentor.Specialty,
-                    HourlyRate = mentor.HourlyRate,
-                    Description = mentor.Description,
+                
+                    //HourlyRate = mentor.HourlyRate,
+                    //Description = mentor.Description,
                 });
             }
 

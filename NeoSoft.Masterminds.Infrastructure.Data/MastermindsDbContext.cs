@@ -56,7 +56,6 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
         {
             modelBuilder.Entity<MentorEntity>().ToTable("Mentors");
             modelBuilder.Entity<MentorEntity>().HasKey(p => p.Id);
-            modelBuilder.Entity<MentorEntity>().Property(x => x.Specialty).IsRequired().HasMaxLength(50);
             modelBuilder.Entity<MentorEntity>().Property(x => x.Rating);
             modelBuilder.Entity<MentorEntity>().Property(x => x.Description).IsRequired();
             modelBuilder.Entity<MentorEntity>().Property(x => x.HourlyRate).HasColumnType("Decimal(8,2)");

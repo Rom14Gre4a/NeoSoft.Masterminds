@@ -42,6 +42,12 @@ namespace NeoSoft.Masterminds
             services.AddScoped<IFileService, FileService>();
             services.AddScoped<IFileRepository, FileRepository>();
 
+            services.AddScoped<IProfessionRepository, ProfessionRepository>();
+            services.AddScoped<IProfessionService, ProfessionService>();
+
+            services.AddScoped<IProfessionalAspectRepository, ProfessionalAspectRepository>();
+            services.AddScoped<IProfessionAspectService, ProfessionAspectService>();
+
             services.AddIdentity<AppUser, AppRole>()
                .AddEntityFrameworkStores<MastermindsDbContext>();
 

@@ -12,6 +12,6 @@
 
         public double Rating { get; set; }
 
-        public string Specialty { get; set; }
+       // public string Specialty { get; set; }
     }
 }

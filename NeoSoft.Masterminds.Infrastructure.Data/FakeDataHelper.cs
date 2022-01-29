@@ -16,6 +16,19 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
     public class FakeDataHelper
 
     {
+        private static List<string> FakeProfessional = new List<string>()
+        {
+            "Focused",
+            "Poised",
+            "Respectful of others",
+            "Strong communicator",
+            "Effective time management",
+            "Organized",
+            "physical health",
+            "mental health",
+            "Positive thinking"
+        };
+
         private static List<string> FakeProfessions = new List<string>()
         {
             "Psychologist",
@@ -43,7 +56,7 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
             "c289844f-a838-4c9d-a03f-5354f0a6b070",
             "e8b56e48-ac8b-4113-9372-18e5598ba662",
         };
-        private List<MentorEntity> Mentors { get; set; }
+        //private List<MentorEntity> Mentors { get; set; }
         private readonly MastermindsDbContext _context;
 
         public FakeDataHelper(MastermindsDbContext contenxt)
@@ -54,31 +67,34 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
         public async Task SeedFakeData(UserManager<AppUser> userManager)
         {
             var anyMentors = await _context.Mentors.AnyAsync();
-           
+
             if (!anyMentors)
             {
-                var listProfAsp = GenerateProfessionalAspect();
-                var listProff = GenerateProfessions();
-                var mentors = GenerateMentors(listProff, 50);
-                foreach (var mentor in mentors)
-                    await userManager.CreateAsync(mentor);
-
-                var reviewers = GenerateReviewers(50);
-                foreach (var reviewer in reviewers)
-                    await userManager.CreateAsync(reviewer);
-
-
-                var reviews = GenerateReviews(mentors.Select(x => x.Id).ToList(), reviewers.Select(x => x.Id).ToList());
-                var fakeProfessions = GenerateProfessions();
-                var fakeProfessional = GenerateProfessionalAspect();
-                await _context.AddRangeAsync(fakeProfessions);
-                await _context.AddRangeAsync(fakeProfessional);
-
-
-
-                await _context.Reviews.AddRangeAsync(reviews);
-                await _context.SaveChangesAsync();
+                return;
             }
+            var listProfAsp = GenerateProfessionalAspect();
+            var listProff = GenerateProfessions();
+            var mentors = GenerateMentors(listProfAsp, listProff, 50);
+            foreach (var mentor in mentors)
+                await userManager.CreateAsync(mentor, "123456");
+
+            var reviewers = GenerateReviewers(50);
+            foreach (var reviewer in reviewers)
+                await userManager.CreateAsync(reviewer, "123456");
+
+
+            var reviews = GenerateReviews(mentors.Select(x => x.Id).ToList(), reviewers.Select(x => x.Id).ToList());
+            var fakeProfessions = GenerateProfessions();
+            var fakeProfessional = GenerateProfessionalAspect();
+
+            await _context.Reviews.AddRangeAsync(reviews);
+            await _context.AddRangeAsync(fakeProfessions);
+            await _context.AddRangeAsync(fakeProfessional);
+            await _context.SaveChangesAsync();
+
+
+            
+
         }
 
 
@@ -100,7 +116,7 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
 
         }
 
-        private List<AppUser> GenerateMentors(List<ProfessionEntity> profi, int fakeNumber = 50)
+        private List<AppUser> GenerateMentors(List<ProfessionalAspectEntity> profAsp, List<ProfessionEntity> profi, int fakeNumber = 50)
         {
             var mentors = new List<AppUser>();
 
@@ -121,32 +137,20 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
                         Photo = GetProfilePhoto(faker.Random.Int(0, ExistingImages.Length - 1)),
                         Mentor = new MentorEntity
                         {
-                            Specialty = faker.Person.Company.CatchPhrase,
                             HourlyRate = faker.Random.Decimal(4, 70),
-                            //ProfessionalAspects = GetRandomProfessionalAspects(1, profAsp),         //string.Join(", ", faker.Random.WordsArray(1, 4)),
+                            ProfessionalAspects = GetRandomProfessionalAspects(faker.Random.Int(0, 3), profAsp),         //string.Join(", ", faker.Random.WordsArray(1, 4)),
                             Description = faker.Lorem.Paragraph(faker.Random.Int(1, 3)),
                             Professions = GetRandomProfessions(1, profi)
                         }
                     },
                 });
             }
-            return mentors; 
+            return mentors;
 
         }
-        private static List<ProfessionEntity> GenerateProfessions()
-        {
-            List<ProfessionEntity> professions = new List<ProfessionEntity>();
 
-            foreach (var profession in FakeProfessions)
-            {
-                professions.Add(new ProfessionEntity
-                {
-                    Name = profession
-                });
-            }
-            return professions;
 
-        }
+
         public static List<AppUser> GenerateReviewers(int fakeNumber = 50)
         {
             var reviewers = new List<AppUser>();
@@ -169,9 +173,11 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
                     }
                 });
             }
-
             return reviewers;
         }
+
+
+
         public static List<ReviewEntity> GenerateReviews(List<int> mentorIds, List<int> reviewerIds)
         {
             var reviews = new List<ReviewEntity>();
@@ -236,17 +242,31 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
         }
         private static List<ProfessionalAspectEntity> GenerateProfessionalAspect()
         {
-            List<ProfessionalAspectEntity> professions = new List<ProfessionalAspectEntity>();
+            List<ProfessionalAspectEntity> professionalAsp = new List<ProfessionalAspectEntity>();
+
+            foreach (var professionAsp in FakeProfessional)
+            {
+                professionalAsp.Add(new ProfessionalAspectEntity
+                {
+                    Aspect = professionAsp
+                });
+            }
+            return professionalAsp;
+
+        }
+        private static List<ProfessionEntity> GenerateProfessions()
+        {
+            List<ProfessionEntity> professions = new List<ProfessionEntity>();
 
             foreach (var profession in FakeProfessions)
             {
-                professions.Add(new ProfessionalAspectEntity
+                professions.Add(new ProfessionEntity
                 {
-                    Aspect = profession
+                    Name = profession
                 });
             }
             return professions;
-
         }
+
     }
 }

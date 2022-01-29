@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NeoSoft.Masterminds.Domain.Models;
 using NeoSoft.Masterminds.Domain.Models.Enums;
+using NeoSoft.Masterminds.Domain.Models.Filters;
 using NeoSoft.Masterminds.Infrastructure.Data;
 using NeoSoft.Masterminds.Models;
 using NeoSoft.Masterminds.Services.Interfaces;
@@ -25,7 +26,7 @@ namespace NeoSoft.Masterminds.Controllers
             _logger = logger;
             _mentorService = mentorService;
         }
-        [HttpGet("mentorId")]
+        [HttpGet("Id")]
         public async Task<ActionResult<MentorView>> GetMentorProfileById( int mentorId)
         {
             var mentorModel = await _mentorService.GetMentorProfileById(mentorId);
@@ -55,7 +56,7 @@ namespace NeoSoft.Masterminds.Controllers
             };
         }
 
-        [HttpGet("mentorsList")]
+        [HttpGet("List")]
         public async Task<List<MentorListView>> Get([FromQuery] GetListItems filter)
         {
             var mentors = await _mentorService.Get(new GetFilter
@@ -64,7 +65,7 @@ namespace NeoSoft.Masterminds.Controllers
                 Take = filter.Take ?? 15,
                 OrderByProperty = string.Empty,
                 SearchText = filter.SearchText,
-                SortOrder = filter.SortOrder ?? SortOrder.Desc
+                SortOrder = filter.SortOrder ?? SortOrder.Descending
             });
 
 
@@ -73,7 +74,7 @@ namespace NeoSoft.Masterminds.Controllers
                 Id = x.Id,
                 FirstName = x.FirstName,
                 LastName = x.LastName,
-                Specialty = x.Specialty,
+                //Specialty = x.Specialty,
                 Rating = x.Rating,
                 ProfilePhoto = GetPhotoPath(x.ProfilePhotoId)
             }).ToList();

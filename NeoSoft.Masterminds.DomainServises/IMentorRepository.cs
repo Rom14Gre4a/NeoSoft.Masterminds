@@ -1,5 +1,6 @@
 ﻿using NeoSoft.Masterminds.Domain.Models;
 using NeoSoft.Masterminds.Domain.Models.Entities;
+using NeoSoft.Masterminds.Domain.Models.Filters;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;

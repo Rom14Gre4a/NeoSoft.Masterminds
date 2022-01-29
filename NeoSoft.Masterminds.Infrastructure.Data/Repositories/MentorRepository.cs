@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using NeoSoft.Masterminds.Domain.Models;
 using System.Linq;
 using NeoSoft.Masterminds.Domain.Models.Enums;
+using NeoSoft.Masterminds.Domain.Models.Filters;
 
 namespace NeoSoft.Masterminds.Infrastructure.Data.Repositories
 {
@@ -22,12 +23,12 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Repositories
         }
         public async Task<MentorEntity> GetMentorProfileById(int mentorId)
         {
-            //var mentor = await _dbContext.Mentors.Include(p => p.Profile).ThenInclude(r => r.SentReviews)
-            //    .FirstOrDefaultAsync(m => m.Id == mentorId);
             var mentor = await _dbContext
                 .Mentors
-                 .Include(x => x.Profile).ThenInclude(x => x.SentReviews) 
-              
+                .Include(m => m.ProfessionalAspects)
+                .Include(m => m.Professions)
+                .Include(x => x.Profile).ThenInclude(x => x.RecivedReviews)
+                .Include(x => x.Profile).ThenInclude(x => x.Photo)
                 .FirstOrDefaultAsync(x => x.Id == mentorId);
 
             return mentor;
@@ -63,9 +64,9 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Repositories
             if (!string.IsNullOrWhiteSpace(filter.SearchText))
             {
                 baseQuery = baseQuery.Where(x =>
-                    x.Profile.ProfileFirstName.Contains(filter.SearchText) || 
-                    x.Profile.ProfileLastName.Contains(filter.SearchText) ||
-                    x.Specialty.Contains(filter.SearchText));
+                    x.Profile.ProfileFirstName.Contains(filter.SearchText) ||
+                    x.Profile.ProfileLastName.Contains(filter.SearchText)); 
+                    //x.Profile.Professions(filter.SearchText));// замість spec
             }
 
             var mentors = await baseQuery

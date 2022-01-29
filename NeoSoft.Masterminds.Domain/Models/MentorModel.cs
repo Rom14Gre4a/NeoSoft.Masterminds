@@ -15,6 +15,7 @@ namespace NeoSoft.Masterminds.Domain
         public int ReviewsTotalCount { get; set; }
         public decimal HourlyRate { get; set; }
         public List<string> ProfessionalAspects { get; set; }
+        public List<string> Professions { get; set; }
         public string Description { get; set; }
         public List<ReviewModel> Reviews { get; set; } 
     }

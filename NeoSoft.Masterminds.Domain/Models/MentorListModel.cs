@@ -8,12 +8,14 @@ namespace NeoSoft.Masterminds.Domain.Models.Models
     {
         public int Id { get; set; }
         public int ProfilePhotoId { get; set; }
+
         public string FirstName { get; set; }
         public string LastName { get; set; }
+
         public double Rating { get; set; }
-        public string Specialty { get; set; }
-        public decimal HourlyRate { get; set; }
-        public string Description { get; set; }
+        public IList<ProfessionsModel> professions { get; set; }
+       
+        
 
     }
 
