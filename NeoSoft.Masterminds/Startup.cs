@@ -34,6 +34,7 @@ namespace NeoSoft.Masterminds
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<JwtTokenOptions>(Configuration.GetSection(nameof(JwtTokenOptions)));
             services.AddDbContext<MastermindsDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddScoped<IMentorRepository, MentorRepository>();
@@ -48,10 +49,13 @@ namespace NeoSoft.Masterminds
             services.AddScoped<IProfessionalAspectRepository, ProfessionalAspectRepository>();
             services.AddScoped<IProfessionAspectService, ProfessionAspectService>();
 
+            services.AddScoped<IJwtTokenService, JwtTokenService>();
+            services.AddScoped<IAccountService, AccountService>();
+
             services.AddIdentity<AppUser, AppRole>()
                .AddEntityFrameworkStores<MastermindsDbContext>();
 
-            services.Configure<JwtTokenOptions>(Configuration.GetSection(nameof(JwtTokenOptions)));
+            
 
             services.AddControllers()
                  .AddJsonOptions(options =>

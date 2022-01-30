@@ -58,7 +58,7 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
             modelBuilder.Entity<MentorEntity>().HasKey(p => p.Id);
             modelBuilder.Entity<MentorEntity>().Property(x => x.Rating);
             modelBuilder.Entity<MentorEntity>().Property(x => x.Description).IsRequired();
-            modelBuilder.Entity<MentorEntity>().Property(x => x.HourlyRate).HasColumnType("Decimal(8,2)");
+            modelBuilder.Entity<MentorEntity>().Property(x => x.HourlyRate).HasColumnType("decimal(8,2)");
             modelBuilder.Entity<MentorEntity>()
                 .HasOne(me => me.Profile)
                 .WithOne(x => x.Mentor)
@@ -85,7 +85,7 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
             modelBuilder.Entity<ReviewEntity>().ToTable("Reviews");
             modelBuilder.Entity<ReviewEntity>().HasKey(p => p.Id);
             modelBuilder.Entity<ReviewEntity>().Property(x => x.Text).IsRequired();
-            modelBuilder.Entity<ReviewEntity>().Property(x => x.Rating).IsRequired().HasColumnType("decimal(4,2");
+            modelBuilder.Entity<ReviewEntity>().Property(x => x.Rating).IsRequired();
             modelBuilder
                 .Entity<ReviewEntity>()
                 .HasOne(r => r.FromProfile)         //від кого
@@ -148,6 +148,21 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
         private void OnAppRoleEntityCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<AppRole>().ToTable("AppRoles");
+            modelBuilder.Entity<AppRole>()
+                .HasData(new AppRole
+                {
+                    Id = 1,
+                    Name = "User",
+                    NormalizedName = "USER",
+                });
+
+            modelBuilder.Entity<AppRole>()
+                .HasData(new AppRole
+                {
+                    Id = 2,
+                    Name = "Mentor",
+                    NormalizedName = "MENTOR",
+                });
         }
 
 

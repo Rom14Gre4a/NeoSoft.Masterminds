@@ -56,7 +56,7 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
             "c289844f-a838-4c9d-a03f-5354f0a6b070",
             "e8b56e48-ac8b-4113-9372-18e5598ba662",
         };
-        //private List<MentorEntity> Mentors { get; set; }
+        
         private readonly MastermindsDbContext _context;
 
         public FakeDataHelper(MastermindsDbContext contenxt)
@@ -68,32 +68,35 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
         {
             var anyMentors = await _context.Mentors.AnyAsync();
 
-            if (!anyMentors)
+            if (anyMentors)
             {
                 return;
             }
-            var listProfAsp = GenerateProfessionalAspect();
-            var listProff = GenerateProfessions();
-            var mentors = GenerateMentors(listProfAsp, listProff, 50);
-            foreach (var mentor in mentors)
-                await userManager.CreateAsync(mentor, "123456");
 
-            var reviewers = GenerateReviewers(50);
-            foreach (var reviewer in reviewers)
-                await userManager.CreateAsync(reviewer, "123456");
-
-
-            var reviews = GenerateReviews(mentors.Select(x => x.Id).ToList(), reviewers.Select(x => x.Id).ToList());
             var fakeProfessions = GenerateProfessions();
             var fakeProfessional = GenerateProfessionalAspect();
-
-            await _context.Reviews.AddRangeAsync(reviews);
+            
             await _context.AddRangeAsync(fakeProfessions);
             await _context.AddRangeAsync(fakeProfessional);
             await _context.SaveChangesAsync();
+           
+            var mentors = GenerateMentors(fakeProfessional, fakeProfessions, 50);
+            foreach (var mentor in mentors)
+                await userManager.CreateAsync(mentor, "123Qwe!1");
+
+            var reviewers = GenerateReviewers(50);
+            foreach (var reviewer in reviewers)
+                await userManager.CreateAsync(reviewer, "123Qwe!1");
 
 
-            
+            var reviews = GenerateReviews(mentors.Select(x => x.Id).ToList(), reviewers.Select(x => x.Id).ToList());
+           
+
+            await _context.Reviews.AddRangeAsync(reviews);
+            await _context.SaveChangesAsync();
+
+
+
 
         }
 
@@ -138,9 +141,9 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
                         Mentor = new MentorEntity
                         {
                             HourlyRate = faker.Random.Decimal(4, 70),
-                            ProfessionalAspects = GetRandomProfessionalAspects(faker.Random.Int(0, 3), profAsp),         //string.Join(", ", faker.Random.WordsArray(1, 4)),
+                            ProfessionalAspects = profAsp.Skip(3).Take(4).ToList(), //GetRandomProfessionalAspects(faker.Random.Int(0, 3), profAsp),         //string.Join(", ", faker.Random.WordsArray(1, 4)),
                             Description = faker.Lorem.Paragraph(faker.Random.Int(1, 3)),
-                            Professions = GetRandomProfessions(1, profi)
+                            Professions = profi.Skip(3).Take(4).ToList(),   //GetRandomProfessions(1, profi)
                         }
                     },
                 });
@@ -218,7 +221,7 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
             for (int i = 0; i < number; i++)
             {
                 var faker = new Faker();
-                var profession = profi[faker.Random.Int(0, profi.Count)];
+                var profession = profi[faker.Random.Int(0, profi.Count - 1)];
                 if (!professions.Contains(profession))
                 {
                     professions.Add(profession);
@@ -232,7 +235,7 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
             for (int i = 0; i < number; i++)
             {
                 var faker = new Faker();
-                var profession = profAsp[faker.Random.Int(0, profAsp.Count)];
+                var profession = profAsp[faker.Random.Int(0, profAsp.Count - 1)];
                 if (!professional.Contains(profession))
                 {
                     professional.Add(profession);
