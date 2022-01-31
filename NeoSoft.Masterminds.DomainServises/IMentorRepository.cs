@@ -20,6 +20,7 @@ namespace NeoSoft.Masterminds.Domain.Interfaces
 
         Task<Dictionary<int, int>> GetMentorTotalReviews(int[] mentorIds);
 
+        Task<List<MentorEntity>> GetAllMentorProfiles();
 
     }
 }

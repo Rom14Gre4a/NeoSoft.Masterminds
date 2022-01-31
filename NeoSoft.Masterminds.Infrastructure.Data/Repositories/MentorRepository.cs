@@ -126,6 +126,11 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Repositories
 
             return totalReviews;
         }
+        public async Task<List<MentorEntity>> GetAllMentorProfiles()
+        {
+            var listMentorEntity = await _dbContext.Mentors.ToListAsync();
+            return listMentorEntity;
+        }
     }
 
 

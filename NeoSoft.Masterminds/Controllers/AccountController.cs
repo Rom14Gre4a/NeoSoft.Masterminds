@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using NeoSoft.Masterminds.Domain.Models.Models.Auth;
+using NeoSoft.Masterminds.Domain.Models.Responses;
 using NeoSoft.Masterminds.Models;
 using NeoSoft.Masterminds.Models.Registration;
 using NeoSoft.Masterminds.Services.Interfaces;
@@ -18,9 +19,9 @@ namespace NeoSoft.Masterminds.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<TokenApiModel>> Login(IncomLogin login)
+        public async Task<ApiResponse<TokenApiModel>> Login(IncomLogin login)
         {
-            var token = await _accountService.Login(new Domain.Models.Models.Auth.Login
+            var token = await _accountService.Login(new Login
             {
                 Email = login.Email,
                 Password = login.Password
@@ -35,7 +36,7 @@ namespace NeoSoft.Masterminds.Controllers
         [HttpPost("create-user")]
 
 
-        public async Task<ActionResult<TokenApiModel>> CreateNewUser(IncomUserRegistration registration)
+        public async Task<ApiResponse<TokenApiModel>> CreateNewUser(IncomUserRegistration registration)
         {
             var registeredUser = new UserRegistration
             { 
@@ -56,7 +57,7 @@ namespace NeoSoft.Masterminds.Controllers
         }
 
         [HttpPost("create-mentor")]
-        public async Task<ActionResult<TokenApiModel>> CreateNewMentor(IncomMentorRegistration registration)
+        public async Task<ApiResponse<TokenApiModel>> CreateNewMentor(IncomMentorRegistration registration)
         {
             var registeredMentor = new MentorRegistration
             {

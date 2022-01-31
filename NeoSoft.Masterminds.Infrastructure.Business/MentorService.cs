@@ -6,8 +6,10 @@ using NeoSoft.Masterminds.Domain;
 using NeoSoft.Masterminds.Domain.Interfaces;
 using NeoSoft.Masterminds.Domain.Models;
 using NeoSoft.Masterminds.Domain.Models.Entities;
+using NeoSoft.Masterminds.Domain.Models.Exceptions;
 using NeoSoft.Masterminds.Domain.Models.Filters;
 using NeoSoft.Masterminds.Domain.Models.Models;
+using NeoSoft.Masterminds.Domain.Models.Responses;
 using NeoSoft.Masterminds.Services.Interfaces;
 
 namespace NeoSoft.Masterminds.Infrastructure.Business
@@ -23,16 +25,25 @@ namespace NeoSoft.Masterminds.Infrastructure.Business
 
         public async Task<MentorModel> GetMentorProfileById(int mentorId)
         {
+            
             var mentor = await _mentorRepository.GetMentorProfileById(mentorId);
-            if (mentor == null)
-                return null;
+            var listMentor = await _mentorRepository.GetAllMentorProfiles();
+            if (mentorId > listMentor.Count - 1)
+                throw new ValidationErrorException(new ValidationMessage
+                {
+                    Field = "Id",
+                    Messages = new List<string> {$"Mentor with {mentorId} not found in the system" }
+                });
 
             var rating = await СalculateRating(mentorId);
             
             var mentorModel = ConvertEntityModelToMentorModel(mentor, rating);
-            return mentorModel;
+           
+                return mentorModel;
 
         }
+       
+
         private MentorModel ConvertEntityModelToMentorModel(MentorEntity mentor, double rating)
         {
             return new MentorModel
@@ -67,9 +78,6 @@ namespace NeoSoft.Masterminds.Infrastructure.Business
                     Id = mentor.Id,
                     FirstName = mentor.Profile.ProfileFirstName,
                     LastName = mentor.Profile.ProfileLastName,
-                
-                    //HourlyRate = mentor.HourlyRate,
-                    //Description = mentor.Description,
                 });
             }
 

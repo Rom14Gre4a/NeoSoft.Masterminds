@@ -1,8 +1,5 @@
-﻿
-using NeoSoft.Masterminds.Domain.Models.Entities.Identity;
-using System;
+﻿using NeoSoft.Masterminds.Domain.Models.Entities.Identity;
 using System.Collections.Generic;
-using System.Text;
 
 namespace NeoSoft.Masterminds.Domain.Models.Entities
 {
@@ -15,8 +12,6 @@ namespace NeoSoft.Masterminds.Domain.Models.Entities
         public string ProfileLastName { get; set; }
         public AppUser AppUser { get; set; }
         public virtual IList<ReviewEntity> SentReviews { get; set; }
-        public virtual IList<ReviewEntity> RecivedReviews { get; set; }
-
-       
+        public virtual IList<ReviewEntity> RecivedReviews { get; set; }     
     }
 }

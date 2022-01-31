@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
 using NeoSoft.Masterminds.Domain.Models.Filters;
+using NeoSoft.Masterminds.Domain.Models.Responses;
 using NeoSoft.Masterminds.Models;
 using NeoSoft.Masterminds.Services.Interfaces;
 using System.Collections.Generic;
@@ -21,7 +21,7 @@ namespace NeoSoft.Masterminds.Controllers
 
 
         [HttpGet]
-        public async Task<List<ProfessionViewModel>> GetAll([FromQuery] ProfessionFilter filter)
+        public async Task<ApiResponse<List<ProfessionViewModel>>> GetAll([FromQuery] ProfessionFilter filter)
         {
             var professionList = await _professionService.GetAll(new ProfessionFilter
             {

@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using NeoSoft.Masterminds.Common.Extensions;
 using NeoSoft.Masterminds.Domain.Models.Enums;
+using NeoSoft.Masterminds.Domain.Models.Exceptions;
 using NeoSoft.Masterminds.Domain.Models.Models;
+using NeoSoft.Masterminds.Domain.Models.Responses;
 using NeoSoft.Masterminds.Models;
 using NeoSoft.Masterminds.Services.Interfaces;
 using System;
@@ -24,7 +26,7 @@ namespace NeoSoft.Masterminds.Controllers
         }
 
         [HttpPost("upload-profile-photo")]
-        public async Task<ActionResult<int>> UploadProfilePhoto([FromForm] UploadProfilePhoto uploadProfilePhoto)
+        public async Task<ApiResponse<int>> UploadProfilePhoto([FromForm] UploadProfilePhoto uploadProfilePhoto)
         {
             var fileId = 0;
 
@@ -45,18 +47,18 @@ namespace NeoSoft.Masterminds.Controllers
         }
 
         [HttpGet("{fileId:int}")]
-        public async Task<ActionResult> GetFile(int fileId)
+        public async Task<ApiResponse<ActionResult>> GetFile(int fileId)
         {
             try
             {
                 var imageFile = await _fileService.DownloadFileFromFileSystem(fileId, _appEnvironment.WebRootPath);
                 return File(imageFile.File, imageFile.ContentType, $"{imageFile.Name}.{imageFile.Extension}");
             }
-            catch (FileNotFoundException ex)
+            catch (NotFoundException)
             {
                 return NotFound($"File with id '{fileId}' not found");
             }
-            catch (Exception ex)
+            catch (ErrorException)
             {
                 return StatusCode(500, "Internal server error");
             }

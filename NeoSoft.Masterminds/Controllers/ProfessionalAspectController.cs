@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using NeoSoft.Masterminds.Domain.Models.Filters;
 using NeoSoft.Masterminds.Domain.Models.Models;
-using NeoSoft.Masterminds.Infrastructure.Business;
-using NeoSoft.Masterminds.Models;
+using NeoSoft.Masterminds.Domain.Models.Responses;
 using NeoSoft.Masterminds.Services.Interfaces;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -21,7 +20,7 @@ namespace NeoSoft.Masterminds.Controllers
         }
 
         [HttpGet]
-        public async Task<List<ProfessionalAspectModel>> GetAllAsp([FromQuery] ProfessionalAspectSearchFilter filter)
+        public async Task<ApiResponse<List<ProfessionalAspectModel>>> GetAllAsp([FromQuery] ProfessionalAspectSearchFilter filter)
         {
             var professionList = await _professionalAspectService.GetAllAsp(new ProfessionalAspectSearchFilter
             {

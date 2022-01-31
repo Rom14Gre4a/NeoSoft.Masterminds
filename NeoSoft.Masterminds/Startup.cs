@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using NeoSoft.Masterminds.Domain.Models.Options;
+using NeoSoft.Masterminds.Middleware;
 
 namespace NeoSoft.Masterminds
 {
@@ -141,6 +142,8 @@ namespace NeoSoft.Masterminds
                 });
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseMiddleware<ExceptionMiddleware>();
 
             app.UseHttpsRedirection();
 
