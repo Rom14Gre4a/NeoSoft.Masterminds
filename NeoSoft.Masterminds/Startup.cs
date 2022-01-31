@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using NeoSoft.Masterminds.Domain.Models.Options;
+using System.Reflection;
 
 namespace NeoSoft.Masterminds
 {
@@ -34,6 +35,8 @@ namespace NeoSoft.Masterminds
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddAutoMapper(Assembly.GetExecutingAssembly());
+
             services.Configure<JwtTokenOptions>(Configuration.GetSection(nameof(JwtTokenOptions)));
             services.AddDbContext<MastermindsDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
@@ -119,7 +122,7 @@ namespace NeoSoft.Masterminds
                 });
             });
             
-
+ 
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using NeoSoft.Masterminds.Domain;
 using NeoSoft.Masterminds.Domain.Interfaces;
 using NeoSoft.Masterminds.Domain.Models;
@@ -15,47 +16,48 @@ namespace NeoSoft.Masterminds.Infrastructure.Business
     public class MentorService : IMentorService
     {
         private readonly IMentorRepository _mentorRepository;
-
-        public MentorService(IMentorRepository mentorRepository)
+        private readonly IMapper _mapper;
+        public MentorService(IMentorRepository mentorRepository, IMapper mapper )
         {
             _mentorRepository = mentorRepository;
+            _mapper = mapper;
         }
 
         public async Task<MentorModel> GetMentorProfileById(int mentorId)
         {
-            var mentor = await _mentorRepository.GetMentorProfileById(mentorId);
+            MentorEntity mentor = await _mentorRepository.GetMentorProfileById(mentorId);
             if (mentor == null)
                 return null;
 
             var rating = await СalculateRating(mentorId);
-            
-            var mentorModel = ConvertEntityModelToMentorModel(mentor, rating);
-            return mentorModel;
+           
+            return _mapper.Map<MentorModel>(mentor);
 
+                               //ConvertEntityModelToMentorModel(mentor, rating);
         }
-        private MentorModel ConvertEntityModelToMentorModel(MentorEntity mentor, double rating)
-        {
-            return new MentorModel
-            {
-                Id = mentor.Id,
-                FirstName = mentor.Profile.ProfileFirstName,
-                LastName = mentor.Profile.ProfileLastName,
-                Description = mentor.Description,
-                Rating = mentor.Rating,
-                HourlyRate = mentor.HourlyRate,
-                ProfessionalAspects = mentor.ProfessionalAspects.Select(x => x.Aspect).ToList(),
-                Professions = mentor.Professions.Select(x => x.Name).ToList(),
-                Reviews = mentor.Profile.RecivedReviews.Select(x => new ReviewModel
-                {
-                    Id = x.Id,
-                    FirstName = x.ToProfile.ProfileFirstName,
-                    LastName = x.ToProfile.ProfileLastName,
-                    ProfilePhotoId = x.ToProfile.PhotoId ?? Constants.UnknownImageId,
-                    Text = x.Text,
+        //private MentorModel ConvertEntityModelToMentorModel(MentorEntity mentor, double rating)
+       // {
+                //return new MentorModel
+            //{
+            //    Id = mentor.Id,
+            //    FirstName = mentor.Profile.ProfileFirstName,
+            //    LastName = mentor.Profile.ProfileLastName,
+            //    Description = mentor.Description,
+            //    Rating = mentor.Rating,
+            //    HourlyRate = mentor.HourlyRate,
+            //    ProfessionalAspects = mentor.ProfessionalAspects.Select(x => x.Aspect).ToList(),
+            //    Professions = mentor.Professions.Select(x => x.Name).ToList(),
+            //    Reviews = mentor.Profile.RecivedReviews.Select(x => new ReviewModel
+            //    {
+            //        Id = x.Id,
+            //        FirstName = x.ToProfile.ProfileFirstName,
+            //        LastName = x.ToProfile.ProfileLastName,
+            //        ProfilePhotoId = x.ToProfile.PhotoId ?? Constants.UnknownImageId,
+            //        Text = x.Text,
                     
-                }).ToList(),
-            };
-        }
+            //    }).ToList(),
+            //};
+       // }
         public async Task<List<MentorListModel>> Get(GetFilter filter)
         {
             var mentorListDb = await _mentorRepository.Get(filter);
@@ -66,10 +68,7 @@ namespace NeoSoft.Masterminds.Infrastructure.Business
                 {
                     Id = mentor.Id,
                     FirstName = mentor.Profile.ProfileFirstName,
-                    LastName = mentor.Profile.ProfileLastName,
-                
-                    //HourlyRate = mentor.HourlyRate,
-                    //Description = mentor.Description,
+                    LastName = mentor.Profile.ProfileLastName
                 });
             }
 

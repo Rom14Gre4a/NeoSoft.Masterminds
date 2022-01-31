@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using NeoSoft.Masterminds.Domain;
 using NeoSoft.Masterminds.Domain.Models;
 using NeoSoft.Masterminds.Domain.Models.Enums;
 using NeoSoft.Masterminds.Domain.Models.Filters;
@@ -20,40 +22,42 @@ namespace NeoSoft.Masterminds.Controllers
     {
         private readonly ILogger<MentorController> _logger;
         private readonly IMentorService _mentorService;
-    
-        public MentorController(ILogger<MentorController> logger, IMentorService mentorService)
+        private readonly IMapper _mapper;
+        public MentorController(ILogger<MentorController> logger, IMentorService mentorService, IMapper mapper)
         {
             _logger = logger;
             _mentorService = mentorService;
+            _mapper = mapper;
         }
         [HttpGet("Id")]
         public async Task<ActionResult<MentorView>> GetMentorProfileById( int mentorId)
         {
-            var mentorModel = await _mentorService.GetMentorProfileById(mentorId);
-            //if (mentorModel == null)
-            //    return null;
-            return new MentorView
-            {
-                Id = mentorModel.Id,
-                FirstName = mentorModel.FirstName,
-                LastName = mentorModel.LastName,
-                Specialty = mentorModel.Specialty,
-                Description = mentorModel.Description,
-                HourlyRate = mentorModel.HourlyRate,
-                Rating = mentorModel.Rating,
-                Reviews = mentorModel.Reviews.Select(x => new ReviewView
-                {
-                    Id = x.Id,
-                    FirstName = x.FirstName,
-                    LastName = x.LastName,
-                    Rating = x.Rating,
-                    Text = x.Text,
-                    ProfilePhoto = GetPhotoPath(x.ProfilePhotoId)
-                }).ToList(),
-                ProfessionalAspects = mentorModel.ProfessionalAspects,
-                ReviewsTotalCount = mentorModel.ReviewsTotalCount,
-                ProfilePhoto = GetPhotoPath(mentorModel.ProfilePhotoId)
-            };
+            MentorModel model = await _mentorService.GetMentorProfileById(mentorId);
+            return _mapper.Map<MentorView>(model);
+
+
+            //return new MentorView
+            //{
+            //    Id = mentorModel.Id,
+            //    FirstName = mentorModel.FirstName,
+            //    LastName = mentorModel.LastName,
+            //    Specialty = mentorModel.Specialty,
+            //    Description = mentorModel.Description,
+            //    HourlyRate = mentorModel.HourlyRate,
+            //    Rating = mentorModel.Rating,
+            //    Reviews = mentorModel.Reviews.Select(x => new ReviewView
+            //    {
+            //        Id = x.Id,
+            //        FirstName = x.FirstName,
+            //        LastName = x.LastName,
+            //        Rating = x.Rating,
+            //        Text = x.Text,
+            //        ProfilePhoto = GetPhotoPath(x.ProfilePhotoId)
+            //    }).ToList(),
+            //    ProfessionalAspects = mentorModel.ProfessionalAspects,
+            //    ReviewsTotalCount = mentorModel.ReviewsTotalCount,
+            //    ProfilePhoto = GetPhotoPath(mentorModel.ProfilePhotoId)
+            //};
         }
 
         [HttpGet("List")]
