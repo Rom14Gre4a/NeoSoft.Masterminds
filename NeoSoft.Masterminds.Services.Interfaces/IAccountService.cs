@@ -10,7 +10,7 @@ namespace NeoSoft.Masterminds.Services.Interfaces
     {
         Task<TokenModel> Login(Login login);
 
-        Task<TokenModel> CreateNewUserAccount(UserRegistration registration);
+        Task<TokenModel> CreateNewUserAccountAsync(UserRegistration registration);
 
         Task<TokenModel> CreateNewMentorAccount(MentorRegistration registration);
     }

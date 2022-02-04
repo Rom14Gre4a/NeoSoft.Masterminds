@@ -108,8 +108,7 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false),
                     HourlyRate = table.Column<decimal>(type: "decimal(8,2)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Rating = table.Column<double>(type: "float", nullable: false)
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -131,7 +130,8 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Migrations
                     FromProfileId = table.Column<int>(type: "int", nullable: false),
                     ToProfileId = table.Column<int>(type: "int", nullable: false),
                     Text = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Rating = table.Column<double>(type: "float", nullable: false)
+                    Rating = table.Column<double>(type: "float", nullable: false),
+                    ReviewDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -334,12 +334,12 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Migrations
             migrationBuilder.InsertData(
                 table: "AppRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "MentorId", "Name", "NormalizedName", "UserId" },
-                values: new object[] { 1, "d0604a7b-2414-4931-86e8-86f85daa5008", null, "User", "USER", null });
+                values: new object[] { 1, "93a02e3e-f1eb-4161-86ad-97906c726cbd", null, "User", "USER", null });
 
             migrationBuilder.InsertData(
                 table: "AppRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "MentorId", "Name", "NormalizedName", "UserId" },
-                values: new object[] { 2, "b568a689-bba4-40cf-83a2-84922fe2ad7e", null, "Mentor", "MENTOR", null });
+                values: new object[] { 2, "7ec44100-b737-498f-92b2-b2cdad48e787", null, "Mentor", "MENTOR", null });
 
             migrationBuilder.InsertData(
                 table: "Files",

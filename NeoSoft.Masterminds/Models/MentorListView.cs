@@ -1,4 +1,6 @@
-﻿namespace NeoSoft.Masterminds.Models
+﻿using System.Collections.Generic;
+
+namespace NeoSoft.Masterminds.Models
 {
     public class MentorListView
     {
@@ -12,6 +14,6 @@
 
         public double Rating { get; set; }
 
-       // public string Specialty { get; set; }
+        public IList<ProfessionViewModel> Professions { get; set; }
     }
 }

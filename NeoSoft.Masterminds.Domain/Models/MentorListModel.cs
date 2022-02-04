@@ -13,7 +13,7 @@ namespace NeoSoft.Masterminds.Domain.Models.Models
         public string LastName { get; set; }
 
         public double Rating { get; set; }
-        public IList<ProfessionsModel> professions { get; set; }
+        public IList<ProfessionsModel> Professions { get; set; }
        
         
 

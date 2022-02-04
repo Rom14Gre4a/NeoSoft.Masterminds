@@ -20,6 +20,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using NeoSoft.Masterminds.Domain.Models.Options;
 using NeoSoft.Masterminds.Middleware;
+using System.Reflection;
 
 namespace NeoSoft.Masterminds
 {
@@ -35,9 +36,17 @@ namespace NeoSoft.Masterminds
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(builder =>
+                {
+                    builder.WithOrigins("http://localhost:4200", "https://localhost:4200").AllowAnyHeader().AllowAnyMethod().AllowCredentials();
+                });
+            });
+            services.AddAutoMapper(Assembly.GetExecutingAssembly());
             services.Configure<JwtTokenOptions>(Configuration.GetSection(nameof(JwtTokenOptions)));
             services.AddDbContext<MastermindsDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-
+            
             services.AddScoped<IMentorRepository, MentorRepository>();
             services.AddScoped<IMentorService, MentorService>();
 
@@ -53,11 +62,17 @@ namespace NeoSoft.Masterminds
             services.AddScoped<IJwtTokenService, JwtTokenService>();
             services.AddScoped<IAccountService, AccountService>();
 
-            services.AddIdentity<AppUser, AppRole>()
+            services.AddIdentity<AppUser, AppRole>(options =>{
+                options.User.RequireUniqueEmail = true;
+                options.Password.RequiredLength = 6;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequireDigit = false;  
+            })
+
                .AddEntityFrameworkStores<MastermindsDbContext>();
-
-            
-
+           
             services.AddControllers()
                  .AddJsonOptions(options =>
                  {
@@ -65,7 +80,12 @@ namespace NeoSoft.Masterminds
                      options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
                      options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
                  });
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            services.AddAuthentication(opt =>
+            {
+                opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+
+            })
                     .AddJwtBearer(options =>
                     {
                         options.RequireHttpsMetadata = false;
@@ -124,21 +144,21 @@ namespace NeoSoft.Masterminds
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, MastermindsDbContext context, UserManager<Domain.Models.Entities.Identity.AppUser> userManager) 
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, MastermindsDbContext context, UserManager<AppUser> userManager, RoleManager<AppRole> roleManager) 
         {
             var databaseMigrateTask = Task.Run(() => context.Database.MigrateAsync());
             databaseMigrateTask.Wait();
 
             if (env.IsDevelopment() || env.IsProduction())
             {
-                var seedFakeDataTask = Task.Run(() => new FakeDataHelper(context).SeedFakeData(userManager));
+                var seedFakeDataTask = Task.Run(() => new FakeDataHelper(context, userManager, roleManager).SeedFakeData());
                 seedFakeDataTask.Wait();
 
                 
                 app.UseSwagger();
                 app.UseSwaggerUI(c =>
                 {
-                    c.SwaggerEndpoint("v1/swagger.json", "NeoSoft.Masterminds V1");
+                    c.SwaggerEndpoint("v1/swagger.json", "Masterminds Api V1");
                 });
                 app.UseDeveloperExceptionPage();
             }
@@ -148,7 +168,9 @@ namespace NeoSoft.Masterminds
             app.UseHttpsRedirection();
 
             app.UseRouting();
- 
+
+            app.UseCors();
+
             app.UseAuthentication();
 
             app.UseAuthorization();

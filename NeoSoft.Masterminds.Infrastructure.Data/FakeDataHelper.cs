@@ -4,10 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using NeoSoft.Masterminds.Domain.Models.Entities;
 using NeoSoft.Masterminds.Domain.Models.Entities.Identity;
 using NeoSoft.Masterminds.Domain.Models.Enums;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 
@@ -58,13 +56,27 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
         };
         
         private readonly MastermindsDbContext _context;
+        private readonly UserManager<AppUser> _userManager;
+        private readonly RoleManager<AppRole> _roleManager;
+        private readonly Faker _faker;
+        private List<ReviewEntity> _reviews { get; set; }
+        private List<ProfileEntity> _registredUsers { get; set; }
+        private List<MentorEntity> _mentors { get; set; }
 
-        public FakeDataHelper(MastermindsDbContext contenxt)
+
+        public FakeDataHelper(MastermindsDbContext contenxt, UserManager<AppUser> userManager, RoleManager<AppRole> roleManager)
         {
             _context = contenxt;
+            _registredUsers = new List<ProfileEntity>();
+            _mentors = new List<MentorEntity>();
+            _reviews = new List<ReviewEntity>();
+            _faker = new Faker();
+            _userManager = userManager;
+            _roleManager = roleManager;
+
         }
 
-        public async Task SeedFakeData(UserManager<AppUser> userManager)
+        public async Task SeedFakeData()//UserManager<AppUser> userManager, RoleManager<AppRole> roleManager
         {
             var anyMentors = await _context.Mentors.AnyAsync();
 
@@ -73,6 +85,7 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
                 return;
             }
 
+            int mentorCount = 50;
             var fakeProfessions = GenerateProfessions();
             var fakeProfessional = GenerateProfessionalAspect();
             
@@ -80,28 +93,85 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
             await _context.AddRangeAsync(fakeProfessional);
             await _context.SaveChangesAsync();
            
-            var mentors = GenerateMentors(fakeProfessional, fakeProfessions, 50);
-            foreach (var mentor in mentors)
-                await userManager.CreateAsync(mentor, "123Qwe!1");
-
-            var reviewers = GenerateReviewers(50);
-            foreach (var reviewer in reviewers)
-                await userManager.CreateAsync(reviewer, "123Qwe!1");
-
-
-            var reviews = GenerateReviews(mentors.Select(x => x.Id).ToList(), reviewers.Select(x => x.Id).ToList());
-           
-
-            await _context.Reviews.AddRangeAsync(reviews);
+            await GenerateMentors(fakeProfessional, fakeProfessions, mentorCount);
+          
             await _context.SaveChangesAsync();
 
+            await CreateProfileForUsersAsync(mentorCount);
 
+            await _context.SaveChangesAsync();
 
+            await GenerateReviewers(mentorCount);
+           
+            await CreateIdentityForMentors();
 
+            await CreateIdentityForUsers();
+
+            await CreateRolesIdentity();
+
+            await CreateRoleForMentorsAsync();
+
+            await CreatedRoleForUsersAsync();
+
+            await _context.SaveChangesAsync();
         }
 
+        private async Task CreateRolesIdentity()
+        {
+            var userRole = new AppRole { Name = "User" };
+            var managerRole = new AppRole { Name = "Mentor" };
 
+            await _roleManager.CreateAsync(userRole);
+            await _roleManager.CreateAsync(managerRole);
 
+        }
+        private async Task CreateIdentityForUsers()
+        {
+            foreach (var user in _registredUsers)
+            {
+                var faker = new Faker();
+
+                await _userManager.CreateAsync(new AppUser
+                {
+                    Email = faker.Person.Email,
+                    UserName = faker.Person.Email,
+                    Profile = user
+                },
+                  "Asd123!1");
+            }
+        }
+        private async Task CreateIdentityForMentors()
+        {
+            foreach (var mentor in _mentors)
+            {
+                var faker = new Faker();
+
+                await _userManager.CreateAsync(new AppUser
+                {
+                    Email = faker.Person.Email,
+                    UserName = faker.Person.Email,
+                    Profile = mentor.Profile
+                },
+                  "Asd123!1");
+            }
+        }
+        private async Task CreatedRoleForUsersAsync()
+        {
+            foreach (var user in _registredUsers)
+            {
+                var appUser = await _userManager.FindByIdAsync(user.Id.ToString());
+
+                await _userManager.AddToRoleAsync(appUser, "User");
+            }
+        }
+        private async Task CreateRoleForMentorsAsync()
+        {
+            foreach (var mentor in _mentors)
+            {
+                var appUser = await _userManager.FindByIdAsync(mentor.Id.ToString());
+                await _userManager.AddToRoleAsync(appUser, "Mentor");
+            }
+        }
 
         private static FileEntity GetProfilePhoto(int index)
         {
@@ -118,130 +188,61 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
             };
 
         }
-
-        private List<AppUser> GenerateMentors(List<ProfessionalAspectEntity> profAsp, List<ProfessionEntity> profi, int fakeNumber = 50)
+        private async Task GenerateMentors(List<ProfessionalAspectEntity> profAsp, List<ProfessionEntity> profi, int mentorCount)
         {
-            var mentors = new List<AppUser>();
-
-            for (int i = 0; i < fakeNumber; i++)
+            for (int i = 0; i < mentorCount; i++)
             {
-                var faker = new Faker();
-
-                var email = faker.Person.Email;
-
-                mentors.Add(new AppUser
+                var mentor = new MentorEntity()
                 {
-                    UserName = email,
-                    Email = email,
+                    HourlyRate = _faker.Random.Int(5, 50),
+                    Description = _faker.Lorem.Text(),
+                    ProfessionalAspects = profAsp.Skip(3).Take(4).ToList(),
+                    Professions = profi.Skip(3).Take(4).ToList(), 
                     Profile = new ProfileEntity
                     {
-                        ProfileFirstName = faker.Person.FirstName,
-                        ProfileLastName = faker.Person.LastName,
-                        Photo = GetProfilePhoto(faker.Random.Int(0, ExistingImages.Length - 1)),
-                        Mentor = new MentorEntity
-                        {
-                            HourlyRate = faker.Random.Decimal(4, 70),
-                            ProfessionalAspects = profAsp.Skip(3).Take(4).ToList(), //GetRandomProfessionalAspects(faker.Random.Int(0, 3), profAsp),         //string.Join(", ", faker.Random.WordsArray(1, 4)),
-                            Description = faker.Lorem.Paragraph(faker.Random.Int(1, 3)),
-                            Professions = profi.Skip(3).Take(4).ToList(),   //GetRandomProfessions(1, profi)
-                        }
-                    },
-                });
-            }
-            return mentors;
-
-        }
-
-
-
-        public static List<AppUser> GenerateReviewers(int fakeNumber = 50)
-        {
-            var reviewers = new List<AppUser>();
-
-            for (int i = 0; i < fakeNumber; i++)
-            {
-                var faker = new Faker();
-
-                var email = faker.Person.Email;
-
-                reviewers.Add(new AppUser
-                {
-                    UserName = email,
-                    Email = email,
-                    Profile = new ProfileEntity
-                    {
-                        ProfileFirstName = faker.Person.FirstName,
-                        ProfileLastName = faker.Person.LastName,
-                        Photo = GetProfilePhoto(faker.Random.Int(0, ExistingImages.Length - 1))
+                        ProfileFirstName = _faker.Name.FirstName(),
+                        ProfileLastName = _faker.Name.LastName(),
+                        Photo = GetProfilePhoto(_faker.Random.Int(0, ExistingImages.Length - 1)),
                     }
-                });
+                };
+
+                _mentors.Add(mentor);
             }
-            return reviewers;
+
+            await _context.AddRangeAsync(_mentors);
         }
-
-
-
-        public static List<ReviewEntity> GenerateReviews(List<int> mentorIds, List<int> reviewerIds)
+        private async Task GenerateReviewers(int mentorCount)
         {
-            var reviews = new List<ReviewEntity>();
-
-            var randomizer = new Randomizer();
-            var randomMentorIds = mentorIds.Skip(randomizer.Int(0, mentorIds.Count)).Take(randomizer.Int(10, 40)).ToList();
-
-            foreach (var randomMentorId in randomMentorIds)
+            for (int i = 0; i < mentorCount; i++)
             {
-                var reviewsPart = GenerateReviews(randomMentorId, reviewerIds, randomizer.Int(1, 6));
-                reviews.AddRange(reviewsPart);
+                var review = new ReviewEntity
+                {
+                    ReviewDate = _faker.Date.Past(10),
+                    Text = _faker.Lorem.Text(),
+                    Rating = _faker.Random.Double(1, 5),
+                    FromProfileId = _faker.PickRandom(_registredUsers.Select(u => u.Id)),
+                    ToProfileId = _faker.PickRandom(_mentors.Select(m => m.Id))
+                };
+
+                _reviews.Add(review);
             }
 
-            return reviews;
+            await _context.AddRangeAsync(_reviews);
         }
-
-        public static List<ReviewEntity> GenerateReviews(int mentorId, List<int> reviewerIds, int fakeNumber = 5)
+        private async Task CreateProfileForUsersAsync(int count)
         {
-            var reviewFaker = new Faker<ReviewEntity>()
-                .RuleFor(x => x.FromProfile, f => new ProfileEntity
-                {
-                    ProfileFirstName = f.Person.FirstName,
-                    ProfileLastName = f.Person.LastName,
-                })
-                        .RuleFor(x => x.ToProfile, f => new ProfileEntity
-                        {
-                            ProfileFirstName = f.Person.FirstName,
-                            ProfileLastName = f.Person.LastName,
-                        })
-                .RuleFor(x => x.Rating, f => f.Random.Double(1, 5))
-                .RuleFor(x => x.Text, f => f.Random.Words());
-
-            return reviewFaker.Generate(fakeNumber);
-        }
-        private static List<ProfessionEntity> GetRandomProfessions(int number, List<ProfessionEntity> profi)
-        {
-            List<ProfessionEntity> professions = new List<ProfessionEntity>();
-            for (int i = 0; i < number; i++)
+            for (int i = 0; i < count; i++)
             {
-                var faker = new Faker();
-                var profession = profi[faker.Random.Int(0, profi.Count - 1)];
-                if (!professions.Contains(profession))
+                ProfileEntity profile = new ProfileEntity
                 {
-                    professions.Add(profession);
-                }
+                    ProfileFirstName = _faker.Name.FirstName(),
+                    ProfileLastName = _faker.Name.LastName(),
+                    Photo = GetProfilePhoto(_faker.Random.Int(1, 100))
+                };
+                _registredUsers.Add(profile);
             }
-            return professions;
-        }
-        private static List<ProfessionalAspectEntity> GetRandomProfessionalAspects(int number, List<ProfessionalAspectEntity> profAsp)
-        {
-            List<ProfessionalAspectEntity> professional = new List<ProfessionalAspectEntity>();
-            for (int i = 0; i < number; i++)
-            {
-                var faker = new Faker();
-                var profession = profAsp[faker.Random.Int(0, profAsp.Count - 1)];
-                if (!professional.Contains(profession))
-                {
-                    professional.Add(profession);
-                }
-            }
-            return professional;
+
+            await _context.AddRangeAsync(_registredUsers);
         }
         private static List<ProfessionalAspectEntity> GenerateProfessionalAspect()
         {

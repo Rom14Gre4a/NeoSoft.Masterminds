@@ -14,5 +14,6 @@ namespace NeoSoft.Masterminds.Domain.Models.Entities
 
         public string Text { get; set; }
         public double Rating { get; set; }
+        public DateTime ReviewDate { get; set; }
     }
 }

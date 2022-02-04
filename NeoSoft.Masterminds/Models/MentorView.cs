@@ -12,7 +12,7 @@ namespace NeoSoft.Masterminds.Models
 
         public string LastName { get; set; }
 
-        public string Specialty { get; set; }
+        public List<string> Professions { get; set; }
 
         public double Rating { get; set; }
 

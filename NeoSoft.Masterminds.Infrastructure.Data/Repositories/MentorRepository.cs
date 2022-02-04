@@ -10,19 +10,24 @@ using NeoSoft.Masterminds.Domain.Models;
 using System.Linq;
 using NeoSoft.Masterminds.Domain.Models.Enums;
 using NeoSoft.Masterminds.Domain.Models.Filters;
+using Microsoft.Extensions.Logging;
 
 namespace NeoSoft.Masterminds.Infrastructure.Data.Repositories
 {
     public class MentorRepository : IMentorRepository
     {
         private readonly MastermindsDbContext _dbContext;
+        private readonly ILogger<MentorRepository> _logger;
 
-        public MentorRepository(MastermindsDbContext dbContext)
+        public MentorRepository(ILogger<MentorRepository> logger, MastermindsDbContext dbContext)
         {
             _dbContext = dbContext;
+            _logger = logger;
         }
         public async Task<MentorEntity> GetMentorProfileById(int mentorId)
         {
+            _logger.LogInformation("Get mentor by Id in repository started");
+
             var mentor = await _dbContext
                 .Mentors
                 .Include(m => m.ProfessionalAspects)
@@ -31,10 +36,14 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Repositories
                 .Include(x => x.Profile).ThenInclude(x => x.Photo)
                 .FirstOrDefaultAsync(x => x.Id == mentorId);
 
+            _logger.LogInformation("Get mentor by Id in repository finished successfuly");
+
             return mentor;
         }
         public async Task<List<MentorEntity>> Get(GetFilter filter)
         {
+            _logger.LogInformation("Getting a list of filter mentors in the repository has started");
+
             var baseQuery = _dbContext.Mentors.AsNoTracking();
 
             if (filter.OrderByProperty != null)
@@ -66,14 +75,16 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Repositories
                 baseQuery = baseQuery.Where(x =>
                     x.Profile.ProfileFirstName.Contains(filter.SearchText) ||
                     x.Profile.ProfileLastName.Contains(filter.SearchText)); 
-                    //x.Profile.Professions(filter.SearchText));// замість spec
             }
 
             var mentors = await baseQuery
                 .Include(x => x.Profile).ThenInclude(x => x.Photo)
+                .Include(m => m.Professions).ThenInclude(p => p.Name)
                 .Skip(filter.Skip)
                 .Take(filter.Take)
                 .ToListAsync();
+
+            _logger.LogInformation("Getting a list of filter mentors in the repository has finished successfuly");
 
             return mentors;
         }

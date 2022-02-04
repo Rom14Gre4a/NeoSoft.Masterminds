@@ -10,7 +10,6 @@ namespace NeoSoft.Masterminds.Domain.Models.Entities
        
         public decimal HourlyRate { get; set; }
         public string Description { get; set; }
-        public double Rating { get; set; }
 
         public ProfileEntity Profile { get; set; }
         

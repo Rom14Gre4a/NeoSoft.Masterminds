@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using NeoSoft.Masterminds.Domain.Models.Models.Auth;
 using NeoSoft.Masterminds.Domain.Models.Responses;
 using NeoSoft.Masterminds.Models;
@@ -10,22 +11,29 @@ namespace NeoSoft.Masterminds.Controllers
 {
     [Route("api/account")]
     [ApiController]
-    public class AccountController : Controller
+     public class AccountController : Controller
     {
+        private readonly ILogger<AccountController> _logger;
         private readonly IAccountService _accountService;
-        public AccountController(IAccountService accountService)
+        public AccountController(ILogger<AccountController> logger, IAccountService accountService)
         {
             _accountService = accountService;
+            _logger = logger;
         }
 
         [HttpPost("login")]
+       
         public async Task<ApiResponse<TokenApiModel>> Login(IncomLogin login)
         {
+            _logger.LogInformation(" login action started");
+
             var token = await _accountService.Login(new Login
             {
                 Email = login.Email,
                 Password = login.Password
             });
+
+            _logger.LogInformation("Get login action finished successfuly");
 
             return new TokenApiModel
             {
@@ -35,9 +43,10 @@ namespace NeoSoft.Masterminds.Controllers
 
         [HttpPost("create-user")]
 
-
         public async Task<ApiResponse<TokenApiModel>> CreateNewUser(IncomUserRegistration registration)
         {
+            _logger.LogInformation("Registration user action started");
+
             var registeredUser = new UserRegistration
             { 
                 Email = registration.Email,
@@ -48,9 +57,11 @@ namespace NeoSoft.Masterminds.Controllers
                 PhotoId = registration.PhotoId
             };
 
-            var token = await _accountService.CreateNewUserAccount(registeredUser);
+            var token = await _accountService.CreateNewUserAccountAsync(registeredUser);
 
-           return new TokenApiModel
+            _logger.LogInformation("Registration user action finished successfuly");
+
+            return new TokenApiModel
            { 
                  AccessToken = token.AccessToken 
            };  
@@ -59,6 +70,8 @@ namespace NeoSoft.Masterminds.Controllers
         [HttpPost("create-mentor")]
         public async Task<ApiResponse<TokenApiModel>> CreateNewMentor(IncomMentorRegistration registration)
         {
+            _logger.LogInformation("create mentor action started");
+
             var registeredMentor = new MentorRegistration
             {
                 Email = registration.Email,
@@ -70,6 +83,8 @@ namespace NeoSoft.Masterminds.Controllers
             };
 
             var token = await _accountService.CreateNewMentorAccount(registeredMentor);
+
+            _logger.LogInformation("create mentor action finished successfuly");
 
             return new TokenApiModel
             {

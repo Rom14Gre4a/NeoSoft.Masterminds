@@ -1,14 +1,12 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using NeoSoft.Masterminds.Common.Extensions;
-using NeoSoft.Masterminds.Domain.Models.Enums;
 using NeoSoft.Masterminds.Domain.Models.Exceptions;
-using NeoSoft.Masterminds.Domain.Models.Models;
 using NeoSoft.Masterminds.Domain.Models.Responses;
 using NeoSoft.Masterminds.Models;
 using NeoSoft.Masterminds.Services.Interfaces;
 using System;
-using System.IO;
 using System.Threading.Tasks;
 
 namespace NeoSoft.Masterminds.Controllers
@@ -19,15 +17,20 @@ namespace NeoSoft.Masterminds.Controllers
     {
         private readonly IWebHostEnvironment _appEnvironment;
         private readonly IFileService _fileService;
-        public FileController(IWebHostEnvironment appEnvironment, IFileService fileService)
+        private readonly ILogger<FileController> _logger;
+
+        public FileController(ILogger<FileController> logger, IWebHostEnvironment appEnvironment, IFileService fileService)
         {
             _appEnvironment = appEnvironment;
             _fileService = fileService;
+            _logger = logger;
         }
 
         [HttpPost("upload-profile-photo")]
         public async Task<ApiResponse<int>> UploadProfilePhoto([FromForm] UploadProfilePhoto uploadProfilePhoto)
         {
+            _logger.LogInformation("Post photo action started");
+
             var fileId = 0;
 
             try
@@ -42,6 +45,8 @@ namespace NeoSoft.Masterminds.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogInformation($"Post photo action finished successfuly");
+
                 return fileId;
             }
         }
@@ -49,6 +54,8 @@ namespace NeoSoft.Masterminds.Controllers
         [HttpGet("{fileId:int}")]
         public async Task<ApiResponse<ActionResult>> GetFile(int fileId)
         {
+            _logger.LogInformation("Get photo action started");
+
             try
             {
                 var imageFile = await _fileService.DownloadFileFromFileSystem(fileId, _appEnvironment.WebRootPath);
@@ -60,6 +67,8 @@ namespace NeoSoft.Masterminds.Controllers
             }
             catch (ErrorException)
             {
+                _logger.LogInformation("Get photo action finished successfuly");
+
                 return StatusCode(500, "Internal server error");
             }
         }

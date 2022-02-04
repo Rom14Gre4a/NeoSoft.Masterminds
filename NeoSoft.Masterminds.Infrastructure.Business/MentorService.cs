@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using NeoSoft.Masterminds.Domain;
 using NeoSoft.Masterminds.Domain.Interfaces;
 using NeoSoft.Masterminds.Domain.Models;
@@ -17,10 +18,11 @@ namespace NeoSoft.Masterminds.Infrastructure.Business
     public class MentorService : IMentorService
     {
         private readonly IMentorRepository _mentorRepository;
-
-        public MentorService(IMentorRepository mentorRepository)
+        private readonly IMapper _mapper;
+        public MentorService(IMentorRepository mentorRepository, IMapper mapper )         
         {
             _mentorRepository = mentorRepository;
+            _mapper = mapper;
         }
 
         public async Task<MentorModel> GetMentorProfileById(int mentorId)
@@ -36,26 +38,19 @@ namespace NeoSoft.Masterminds.Infrastructure.Business
                 });
 
             var rating = await СalculateRating(mentorId);
-            
-            var mentorModel = ConvertEntityModelToMentorModel(mentor, rating);
-           
-                return mentorModel;
 
-        }
-       
 
-        private MentorModel ConvertEntityModelToMentorModel(MentorEntity mentor, double rating)
-        {
             return new MentorModel
             {
                 Id = mentor.Id,
                 FirstName = mentor.Profile.ProfileFirstName,
                 LastName = mentor.Profile.ProfileLastName,
                 Description = mentor.Description,
-                Rating = mentor.Rating,
                 HourlyRate = mentor.HourlyRate,
+                Rating = rating,
                 ProfessionalAspects = mentor.ProfessionalAspects.Select(x => x.Aspect).ToList(),
                 Professions = mentor.Professions.Select(x => x.Name).ToList(),
+                ReviewsTotalCount = mentor.Profile.RecivedReviews.Count(),
                 Reviews = mentor.Profile.RecivedReviews.Select(x => new ReviewModel
                 {
                     Id = x.Id,
@@ -63,14 +58,18 @@ namespace NeoSoft.Masterminds.Infrastructure.Business
                     LastName = x.ToProfile.ProfileLastName,
                     ProfilePhotoId = x.ToProfile.PhotoId ?? Constants.UnknownImageId,
                     Text = x.Text,
-                    
-                }).ToList(),
+                    Rating = x.Rating,
+                    ReviewDate = x.ReviewDate,
+
+                }).ToList()
             };
         }
+
         public async Task<List<MentorListModel>> Get(GetFilter filter)
         {
             var mentorListDb = await _mentorRepository.Get(filter);
            var list = new List<MentorListModel>();
+            var rating = await СalculateRating(mentorListDb.Select(m => m.Id).ToArray());
             foreach (var mentor in mentorListDb)
             {
                 list.Add(new MentorListModel
@@ -78,6 +77,10 @@ namespace NeoSoft.Masterminds.Infrastructure.Business
                     Id = mentor.Id,
                     FirstName = mentor.Profile.ProfileFirstName,
                     LastName = mentor.Profile.ProfileLastName,
+                    ProfilePhotoId = mentor.Profile.PhotoId ?? Constants.UnknownImageId,
+                    Rating = rating[mentor.Id],
+                    Professions = (IList<ProfessionsModel>)mentor.Professions.Select(p => p.Name).ToList()
+
                 });
             }
 
@@ -97,6 +100,30 @@ namespace NeoSoft.Masterminds.Infrastructure.Business
             var ratingSum = await _mentorRepository.GetMentorRatingSum(mentorId);
 
             return СalculateRating(totalReviews, ratingSum);
+        }
+        private async Task<Dictionary<int, double>> СalculateRating(int[] mentorIds)
+        {
+            var totalReviews = await _mentorRepository.GetMentorTotalReviews(mentorIds);
+            var ratingSums = await _mentorRepository.GetMentorRatingSum(mentorIds);
+
+            var result = new Dictionary<int, double>();
+
+            foreach (var mentorId in mentorIds)
+            {
+                var mentorRating = 0.0;
+
+                if (totalReviews.ContainsKey(mentorId) && ratingSums.ContainsKey(mentorId))
+                {
+                    var ratingSum = ratingSums[mentorId];
+                    var totalReview = totalReviews[mentorId];
+
+                    mentorRating = СalculateRating(totalReview, ratingSum);
+                }
+
+                result.Add(mentorId, mentorRating);
+            }
+
+            return result;
         }
 
     }

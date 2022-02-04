@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using NeoSoft.Masterminds.Domain.Models.Filters;
 using NeoSoft.Masterminds.Domain.Models.Responses;
 using NeoSoft.Masterminds.Models;
@@ -12,17 +13,20 @@ namespace NeoSoft.Masterminds.Controllers
     [ApiController]
     public class ProfessionController : Controller
     {
+        private readonly ILogger<ProfessionController> _logger;
         private IProfessionService _professionService;
 
-        public ProfessionController(IProfessionService service)
+        public ProfessionController(ILogger<ProfessionController> logger, IProfessionService service)
         {
             _professionService = service;
+            _logger = logger;
         }
-
 
         [HttpGet]
         public async Task<ApiResponse<List<ProfessionViewModel>>> GetAll([FromQuery] ProfessionFilter filter)
         {
+            _logger.LogInformation("Get profession action started");
+
             var professionList = await _professionService.GetAll(new ProfessionFilter
             {
                 Skip = filter.Skip,
@@ -30,7 +34,6 @@ namespace NeoSoft.Masterminds.Controllers
                 OrderByProperty = filter.OrderByProperty,
                 SearchText = filter.SearchText,
                 SortOrder = filter.SortOrder,
-
             });
 
             var pro = new List<ProfessionViewModel>();
@@ -43,6 +46,8 @@ namespace NeoSoft.Masterminds.Controllers
                     Name = ProfessionDb.Name,
                 });
             }
+            _logger.LogInformation($"Get profession action finished successfuly");
+
             return pro;
 
         }

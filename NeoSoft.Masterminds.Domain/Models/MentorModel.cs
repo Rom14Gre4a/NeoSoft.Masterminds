@@ -1,5 +1,4 @@
 ﻿using NeoSoft.Masterminds.Domain.Models.Models;
-using System;
 using System.Collections.Generic;
 
 namespace NeoSoft.Masterminds.Domain
@@ -10,7 +9,6 @@ namespace NeoSoft.Masterminds.Domain
         public int ProfilePhotoId { get; set; }
         public string FirstName { get; set; }    
         public string LastName { get; set; }
-        public string Specialty { get; set; }
         public double Rating { get; set; }
         public int ReviewsTotalCount { get; set; }
         public decimal HourlyRate { get; set; }

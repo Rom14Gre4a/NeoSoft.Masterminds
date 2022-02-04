@@ -5,8 +5,9 @@ using System.Text;
 
 namespace NeoSoft.Masterminds.Domain.Models.Entities
 {
-    public class ProfessionEntity : BaseEntity
+    public class ProfessionEntity 
     {
+       public int Id { get; set; }
        public string Name { get; set; }
        public List<MentorEntity> Mentors { get; set; }
     }
