@@ -2,7 +2,8 @@
 using Microsoft.Extensions.Logging;
 using NeoSoft.Masterminds.Domain.Models.Models.Auth;
 using NeoSoft.Masterminds.Domain.Models.Responses;
-using NeoSoft.Masterminds.Models;
+using NeoSoft.Masterminds.Models.Incoming;
+using NeoSoft.Masterminds.Models.Outcoming;
 using NeoSoft.Masterminds.Models.Registration;
 using NeoSoft.Masterminds.Services.Interfaces;
 using System.Threading.Tasks;

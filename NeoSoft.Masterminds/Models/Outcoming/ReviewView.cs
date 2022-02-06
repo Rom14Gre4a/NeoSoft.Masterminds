@@ -1,4 +1,4 @@
-﻿namespace NeoSoft.Masterminds.Models
+﻿namespace NeoSoft.Masterminds.Models.Outcoming
 {
     public class ReviewView
     {

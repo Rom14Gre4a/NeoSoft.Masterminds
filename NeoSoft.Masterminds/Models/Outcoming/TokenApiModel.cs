@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace NeoSoft.Masterminds.Models
+namespace NeoSoft.Masterminds.Models.Outcoming
 {
     public class TokenApiModel
     {

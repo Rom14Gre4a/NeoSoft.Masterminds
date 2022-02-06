@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace NeoSoft.Masterminds.Models
+namespace NeoSoft.Masterminds.Models.Outcoming
 {
     public class MentorListView
     {

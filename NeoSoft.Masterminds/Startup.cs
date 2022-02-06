@@ -61,6 +61,7 @@ namespace NeoSoft.Masterminds
 
             services.AddScoped<IJwtTokenService, JwtTokenService>();
             services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<IUserProfileService, UserProfileService>();
 
             services.AddIdentity<AppUser, AppRole>(options =>{
                 options.User.RequireUniqueEmail = true;

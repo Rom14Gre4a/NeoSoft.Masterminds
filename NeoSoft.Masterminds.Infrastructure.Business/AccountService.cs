@@ -3,9 +3,6 @@ using NeoSoft.Masterminds.Domain.Models.Entities;
 using NeoSoft.Masterminds.Domain.Models.Entities.Identity;
 using NeoSoft.Masterminds.Domain.Models.Models.Auth;
 using NeoSoft.Masterminds.Services.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace NeoSoft.Masterminds.Infrastructure.Business

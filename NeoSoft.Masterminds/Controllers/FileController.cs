@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 using NeoSoft.Masterminds.Common.Extensions;
 using NeoSoft.Masterminds.Domain.Models.Exceptions;
 using NeoSoft.Masterminds.Domain.Models.Responses;
-using NeoSoft.Masterminds.Models;
+using NeoSoft.Masterminds.Models.Incoming;
 using NeoSoft.Masterminds.Services.Interfaces;
 using System;
 using System.Threading.Tasks;

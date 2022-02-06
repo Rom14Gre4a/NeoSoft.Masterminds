@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using NeoSoft.Masterminds.Models;
+using NeoSoft.Masterminds.Models.Incoming;
 
 namespace NeoSoft.Masterminds.Validators
 {

@@ -1,4 +1,5 @@
-﻿using NeoSoft.Masterminds.Domain.Interfaces;
+﻿using AutoMapper;
+using NeoSoft.Masterminds.Domain.Interfaces;
 using NeoSoft.Masterminds.Domain.Models.Filters;
 using NeoSoft.Masterminds.Domain.Models.Models;
 using NeoSoft.Masterminds.Infrastructure.Data;
@@ -13,25 +14,28 @@ namespace NeoSoft.Masterminds.Infrastructure.Business
     public class ProfessionService : IProfessionService
     {
         private readonly IProfessionRepository _professionRepository;
-
-        public ProfessionService(IProfessionRepository professionRepository)
+        private readonly IMapper _mapper;
+        public ProfessionService(IProfessionRepository professionRepository, IMapper mapper)
         {
             _professionRepository = professionRepository;
+            _mapper = mapper;
         }
         public async Task<List<ProfessionsModel>> GetAll(ProfessionFilter filter)
         {
             var professionListDb = await _professionRepository.GetAll(filter);
-            var list = new List<ProfessionsModel>();
-            foreach (var profession in professionListDb)
-            {
-                list.Add(new ProfessionsModel
-                {
-                    Id = profession.Id,
-                    Name = profession.Name,
-                });
-            }
+            return _mapper.Map<List<ProfessionsModel>>(professionListDb);
 
-            return list;
+            //var list = new List<ProfessionsModel>();
+            //foreach (var profession in professionListDb)
+            //{
+            //    list.Add(new ProfessionsModel
+            //    {
+            //        Id = profession.Id,
+            //        Name = profession.Name,
+            //    });
+            //}
+
+            //return list;
         }
     }
 }

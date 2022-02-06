@@ -3,9 +3,9 @@ using NeoSoft.Masterminds.Domain.Models.Entities;
 
 namespace NeoSoft.Masterminds.Domain.Models.MapConfig
 {
-    public class ApplicationMapConfig : Profile
+    public class MentorMapConfig : Profile
     {
-        public ApplicationMapConfig()
+        public MentorMapConfig()
         {
             CreateMap<MentorEntity,MentorModel>();
         }

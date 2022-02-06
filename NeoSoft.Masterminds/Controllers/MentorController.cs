@@ -5,7 +5,10 @@ using Microsoft.Extensions.Logging;
 using NeoSoft.Masterminds.Domain.Models.Enums;
 using NeoSoft.Masterminds.Domain.Models.Filters;
 using NeoSoft.Masterminds.Domain.Models.Responses;
+using NeoSoft.Masterminds.MapConfig;
 using NeoSoft.Masterminds.Models;
+using NeoSoft.Masterminds.Models.Incoming.Filters;
+using NeoSoft.Masterminds.Models.Outcoming;
 using NeoSoft.Masterminds.Services.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,63 +39,24 @@ namespace NeoSoft.Masterminds.Controllers
 
             _logger.LogInformation($"Get mentor action finished successfuly. Requested mentor ID is {mentorModel.Id}");
 
-            return new MentorView
-            {
-                Id = mentorModel.Id,
-                FirstName = mentorModel.FirstName,
-                LastName = mentorModel.LastName,
-                Description = mentorModel.Description,
-                HourlyRate = mentorModel.HourlyRate,
-                Rating = mentorModel.Rating,
-                Professions = mentorModel.Professions,
-                ProfessionalAspects = mentorModel.ProfessionalAspects,
-                ReviewsTotalCount = mentorModel.ReviewsTotalCount,
-                ProfilePhoto = GetPhotoPath(mentorModel.ProfilePhotoId),
-                Reviews = mentorModel.Reviews.Select(x => new ReviewView
-                {
-                    Id = x.Id,
-                    FirstName = x.FirstName,
-                    LastName = x.LastName,
-                    Rating = x.Rating,
-                    Text = x.Text,
-                    ProfilePhoto = GetPhotoPath(x.ProfilePhotoId)
-                }).ToList()
-               
-            };
+            return MentorMapModel.Map(mentorModel, HttpContext.Request);
+           
+
         }
+        
 
         [HttpGet("List")]
-        public async Task<ApiResponse<List<MentorListView>>> Get([FromQuery] GetListItems filter)
+        public async Task<ApiResponse<List<MentorListView>>> Get([FromQuery] MentorFilterApiModel filter)
         {
             _logger.LogInformation("Get mentors action started");
 
-            var mentors = await _mentorService.Get(new GetFilter
-            {
-                Skip = filter.Skip ?? 0,
-                Take = filter.Take ?? 15,
-                OrderByProperty = string.Empty,
-                SearchText = filter.SearchText,
-                SortOrder = filter.SortOrder ?? SortOrder.Descending
-            });
-
+            var mentors = await _mentorService.Get(_mapper.Map<MentorSearchFilter>(filter));
+           
             _logger.LogInformation("Get mentors action finished successfuly");
 
 
-            return mentors.Select(x => new MentorListView
-            {
-                Id = x.Id,
-                FirstName = x.FirstName,
-                LastName = x.LastName,
-                Rating = x.Rating,
-                Professions = (IList<ProfessionViewModel>)x.Professions,
-                ProfilePhoto = GetPhotoPath(x.ProfilePhotoId)
-            }).ToList();
+            return _mapper.Map<List<MentorListView>>(mentors);
         }
-
-        private string GetPhotoPath(int profilePhotoId)
-        {
-            // https://localhost:5001/api/file/3
-            return $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host.Value}/api/file/{profilePhotoId}";
-        }
+    
     }
 }
