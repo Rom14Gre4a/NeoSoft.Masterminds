@@ -21,6 +21,7 @@ using System.Text;
 using NeoSoft.Masterminds.Domain.Models.Options;
 using NeoSoft.Masterminds.Middleware;
 using System.Reflection;
+using NeoSoft.Masterminds.Infrastructure.Business.MapServices;
 
 namespace NeoSoft.Masterminds
 {
@@ -61,7 +62,9 @@ namespace NeoSoft.Masterminds
 
             services.AddScoped<IJwtTokenService, JwtTokenService>();
             services.AddScoped<IAccountService, AccountService>();
+
             services.AddScoped<IUserProfileService, UserProfileService>();
+            services.AddScoped<IProfileRepository, ProfileRepository>();
 
             services.AddIdentity<AppUser, AppRole>(options =>{
                 options.User.RequireUniqueEmail = true;
@@ -112,6 +115,7 @@ namespace NeoSoft.Masterminds
              {
                  options.RegisterValidatorsFromAssemblyContaining<Startup>();
              });
+            services.AddAutoMapper(Assembly.GetExecutingAssembly(), typeof(ProfileEntityMap).Assembly);
             services.AddSwaggerGen(options =>
             {
                 options.SwaggerDoc("v1", new OpenApiInfo { Title = "NeoSoft.Masterminds", Version = "v1" });

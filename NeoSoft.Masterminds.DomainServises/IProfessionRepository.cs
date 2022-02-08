@@ -9,6 +9,6 @@ namespace NeoSoft.Masterminds.Domain.Interfaces
 {
     public interface IProfessionRepository
     {
-        public Task<List<ProfessionEntity>> GetAll(GetFilter filter);
+        public Task<List<ProfessionEntity>> GetAll(ProfessionFilter filter);
     }
 }

@@ -2,16 +2,13 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using NeoSoft.Masterminds.Domain.Models.Enums;
 using NeoSoft.Masterminds.Domain.Models.Filters;
 using NeoSoft.Masterminds.Domain.Models.Responses;
 using NeoSoft.Masterminds.MapConfig;
-using NeoSoft.Masterminds.Models;
 using NeoSoft.Masterminds.Models.Incoming.Filters;
 using NeoSoft.Masterminds.Models.Outcoming;
 using NeoSoft.Masterminds.Services.Interfaces;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace NeoSoft.Masterminds.Controllers
@@ -46,7 +43,7 @@ namespace NeoSoft.Masterminds.Controllers
         
 
         [HttpGet("List")]
-        public async Task<ApiResponse<List<MentorListView>>> Get([FromQuery] MentorFilterApiModel filter)
+        public async Task<ApiResponse<List<MentorListView>>> Get([FromQuery] MentorFilterApiModel filter) 
         {
             _logger.LogInformation("Get mentors action started");
 

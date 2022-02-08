@@ -65,7 +65,7 @@ namespace NeoSoft.Masterminds.Infrastructure.Business
             };
         }
 
-        public async Task<List<MentorListModel>> Get(GetFilter filter)
+        public async Task<List<MentorListModel>> Get(MentorSearchFilter filter)
         {
             var mentorListDb = await _mentorRepository.Get(filter);
            var list = new List<MentorListModel>();
@@ -79,12 +79,25 @@ namespace NeoSoft.Masterminds.Infrastructure.Business
                     LastName = mentor.Profile.ProfileLastName,
                     ProfilePhotoId = mentor.Profile.PhotoId ?? Constants.UnknownImageId,
                     Rating = rating[mentor.Id],
-                    Professions = (IList<ProfessionsModel>)mentor.Professions.Select(p => p.Name).ToList()
+                    Professions = MyConvertor(mentor.Professions.ToList())
 
                 });
             }
 
             return list;
+        }
+        private List<ProfessionsModel> MyConvertor(List<ProfessionEntity> source)
+        {
+            List<ProfessionsModel> dest = new List<ProfessionsModel>();
+            foreach (var sourceItem in source)
+            {
+                dest.Add(new ProfessionsModel
+                {
+                    Id = sourceItem.Id,
+                    Name = sourceItem.Name
+                });
+            }
+            return dest;
         }
 
         private static double СalculateRating(int totalReviews, double ratingSum)

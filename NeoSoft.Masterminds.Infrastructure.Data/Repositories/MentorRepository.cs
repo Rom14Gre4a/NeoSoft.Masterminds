@@ -79,7 +79,7 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Repositories
 
             var mentors = await baseQuery
                 .Include(x => x.Profile).ThenInclude(x => x.Photo)
-                .Include(m => m.Professions).ThenInclude(p => p.Name)
+                .Include(m => m.Professions)
                 .Skip(filter.Skip)
                 .Take(filter.Take)
                 .ToListAsync();

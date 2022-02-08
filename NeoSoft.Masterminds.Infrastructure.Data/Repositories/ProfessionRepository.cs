@@ -19,7 +19,7 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
             _context = context;
         }
 
-        public async Task<List<ProfessionEntity>> GetAll(GetFilter filter)
+        public async Task<List<ProfessionEntity>> GetAll(ProfessionFilter filter)
         {
             var baseQuery = _context.Professions.AsNoTracking();
 

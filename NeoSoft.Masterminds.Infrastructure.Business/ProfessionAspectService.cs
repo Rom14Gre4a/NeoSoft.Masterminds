@@ -1,4 +1,5 @@
-﻿using NeoSoft.Masterminds.Domain.Interfaces;
+﻿using AutoMapper;
+using NeoSoft.Masterminds.Domain.Interfaces;
 using NeoSoft.Masterminds.Domain.Models.Filters;
 using NeoSoft.Masterminds.Domain.Models.Models;
 using NeoSoft.Masterminds.Services.Interfaces;
@@ -13,25 +14,16 @@ namespace NeoSoft.Masterminds.Infrastructure.Business
     {
        
              private readonly IProfessionalAspectRepository _professionalAspectRepository;
-
-        public ProfessionAspectService(IProfessionalAspectRepository professionalAspectRepository)
+         private readonly IMapper _mapper;
+        public ProfessionAspectService(IProfessionalAspectRepository professionalAspectRepository, IMapper mapper)
         {
             _professionalAspectRepository = professionalAspectRepository;
+            _mapper = mapper;
         }
         public async Task<List<ProfessionalAspectModel>> GetAllAsp(ProfessionalAspectSearchFilter filter)
         {
             var professionAspListDb = await _professionalAspectRepository.GetAllAsp(filter);
-            var list = new List<ProfessionalAspectModel>();
-            foreach (var professional in professionAspListDb)
-            {
-                list.Add(new ProfessionalAspectModel
-                {
-                    Id = professional.Id,
-                    Aspect = professional.Aspect,
-                });
-            }
-
-            return list;
+            return _mapper.Map<List<ProfessionalAspectModel>>(professionAspListDb); 
         }
     }
 

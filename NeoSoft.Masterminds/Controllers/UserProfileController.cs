@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 
 namespace NeoSoft.Masterminds.Controllers
 {
+    [Route("api/user-profile")]
+    [ApiController]
     public class UserProfileController : Controller
     {
         private readonly IUserProfileService _service;
@@ -20,12 +22,15 @@ namespace NeoSoft.Masterminds.Controllers
             _mapper = mapper;
         }
 
-        [Authorize]
+       // [Authorize]
         [HttpGet]
-        public async Task<ApiResponse<UserProfileApiModel>> UserProfile()
+        public async Task<ApiResponse<UserProfileApiModel>> UserProfile(string email)
         {
-
-            var email = User.FindFirst(ClaimTypes.Name)?.Value;
+            if (User.Identity.IsAuthenticated)
+            { 
+                email = User.FindFirstValue(ClaimTypes.Email);
+            }
+           
 
             var userProfile = await _service.GetProfileByEmail(email);
 

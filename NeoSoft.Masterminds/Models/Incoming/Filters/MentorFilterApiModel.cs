@@ -2,7 +2,8 @@
 
 namespace NeoSoft.Masterminds.Models.Incoming.Filters
 {
-    public class MentorFilterApiModel
+    public class MentorFilterApiModel : FilterBaseApiModel
+    
     {
         public MentorOrderBy MentorOrderBy { get; set; }
     }

@@ -8,6 +8,8 @@ namespace NeoSoft.Masterminds.Models.Incoming.Filters
 
         public int Take { get; set; } = 15;
 
+        public string OrderByProperty { get; set; }
+
         public string SearchText { get; set; }
 
         public SortOrder SortOrder { get; set; } = SortOrder.Descending;

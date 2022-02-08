@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NeoSoft.Masterminds.Domain.Models.Models.Auth;
 using NeoSoft.Masterminds.Domain.Models.Responses;
@@ -16,9 +17,11 @@ namespace NeoSoft.Masterminds.Controllers
     {
         private readonly ILogger<AccountController> _logger;
         private readonly IAccountService _accountService;
-        public AccountController(ILogger<AccountController> logger, IAccountService accountService)
+        private readonly IMapper _mapper;
+        public AccountController(ILogger<AccountController> logger, IAccountService accountService, IMapper mapper)
         {
             _accountService = accountService;
+            _mapper = mapper;
             _logger = logger;
         }
 
@@ -26,20 +29,10 @@ namespace NeoSoft.Masterminds.Controllers
        
         public async Task<ApiResponse<TokenApiModel>> Login(IncomLogin login)
         {
-            _logger.LogInformation(" login action started");
+            var token = await _accountService.Login(_mapper.Map<Login>(login));
 
-            var token = await _accountService.Login(new Login
-            {
-                Email = login.Email,
-                Password = login.Password
-            });
-
-            _logger.LogInformation("Get login action finished successfuly");
-
-            return new TokenApiModel
-            {
-                AccessToken = token.AccessToken
-            };
+            return  _mapper.Map<TokenApiModel>(token);
+           
         }
 
         [HttpPost("create-user")]
@@ -48,24 +41,13 @@ namespace NeoSoft.Masterminds.Controllers
         {
             _logger.LogInformation("Registration user action started");
 
-            var registeredUser = new UserRegistration
-            { 
-                Email = registration.Email,
-                FirstName = registration.FirstName,                                           
-                LastName = registration.LastName,
-                Password = registration.Password,
-                ConfirmPassword = registration.ConfirmPassword,
-                PhotoId = registration.PhotoId
-            };
+            var registeredUser = _mapper.Map<UserRegistration>(registration);
 
             var token = await _accountService.CreateNewUserAccountAsync(registeredUser);
 
             _logger.LogInformation("Registration user action finished successfuly");
 
-            return new TokenApiModel
-           { 
-                 AccessToken = token.AccessToken 
-           };  
+            return _mapper.Map<TokenApiModel>(token);
         }
 
         [HttpPost("create-mentor")]
@@ -73,24 +55,13 @@ namespace NeoSoft.Masterminds.Controllers
         {
             _logger.LogInformation("create mentor action started");
 
-            var registeredMentor = new MentorRegistration
-            {
-                Email = registration.Email,
-                FirstName = registration.FirstName,
-                LastName = registration.LastName,
-                Password = registration.Password,
-                ConfirmPassword = registration.ConfirmPassword,
-                PhotoId = registration.PhotoId
-            };
+            var registeredMentor = _mapper.Map<MentorRegistration>(registration);
 
             var token = await _accountService.CreateNewMentorAccount(registeredMentor);
 
             _logger.LogInformation("create mentor action finished successfuly");
 
-            return new TokenApiModel
-            {
-                AccessToken = token.AccessToken
-            };
+            return _mapper.Map<TokenApiModel>(token);
 
         }
     }

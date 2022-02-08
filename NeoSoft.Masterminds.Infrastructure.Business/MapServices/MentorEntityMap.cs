@@ -6,5 +6,6 @@ namespace NeoSoft.Masterminds.Infrastructure.Business.MapServices
 {
     public class MentorEntityMap
     {
+
     }
 }
