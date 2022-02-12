@@ -36,9 +36,13 @@ namespace NeoSoft.Masterminds.Infrastructure.Business
                 throw new NotFoundException($"Profile with this Id => {userApp.Id} was not found");
             }
 
-            var userProfile = _mapper.Map<UserProfileModel>(profileEntity);
-            userProfile.Email = email;
+            var userProfile = new UserProfileModel()
+            {
+                Email = email,
+                FirstName = profileEntity.ProfileFirstName,
+                LastName = profileEntity.ProfileLastName
 
+            };
             return userProfile;
         }
     }

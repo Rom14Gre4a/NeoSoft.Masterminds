@@ -93,11 +93,11 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Repositories
             var ratingSum = await _dbContext.Reviews.Where(x => x.ToProfileId == mentorId).SumAsync(x => x.Rating);
             return ratingSum;
         }
-        public async Task<Dictionary<int, double>> GetMentorRatingSum(int[] mentorIds) // 1, 2, 3, 4, 5
+        public async Task<Dictionary<int, double>> GetMentorRatingSum(int[] mentorIds)
         {
             var ratingSums = await _dbContext
                 .Reviews
-                .Where(x => mentorIds.Contains(x.ToProfileId)) // where Id in (1, 2, 3, 4, 5)
+                .Where(x => mentorIds.Contains(x.ToProfileId))
                 .GroupBy(x => x.ToProfileId)
                 .Select(x => new
                 {
@@ -105,10 +105,6 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Repositories
                     RatingSum = x.Sum(x => x.Rating)
                 })
                 .ToDictionaryAsync(key => key.MentorId, value => value.RatingSum);
-
-            // 1 => 3.4353
-            // 2 => 20.4353
-            // 3 = 4.53424
 
             return ratingSums;
         }
@@ -119,10 +115,10 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Repositories
             return totalReviews;
         }
 
-        public async Task<Dictionary<int, int>> GetMentorTotalReviews(int[] mentorIds) // 1, 2, 3, 4, 5
+        public async Task<Dictionary<int, int>> GetMentorTotalReviews(int[] mentorIds) 
         {
             var totalReviews = await _dbContext.Reviews
-                .Where(x => mentorIds.Contains(x.ToProfileId)) // where Id in (1, 2, 3, 4, 5)
+                .Where(x => mentorIds.Contains(x.ToProfileId)) 
                 .GroupBy(x => x.ToProfileId)
                 .Select(x => new
                 {
@@ -130,11 +126,6 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Repositories
                     TotalReviews = x.Count()
                 })
                 .ToDictionaryAsync(key => key.MentorId, value => value.TotalReviews);
-
-            // 1 => 5
-            // 2 => 3
-            // 3 = 1
-
             return totalReviews;
         }
         public async Task<List<MentorEntity>> GetAllMentorProfiles()

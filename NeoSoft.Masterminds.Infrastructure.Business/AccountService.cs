@@ -39,7 +39,7 @@ namespace NeoSoft.Masterminds.Infrastructure.Business
 
                 var roles = await _userManager.GetRolesAsync(user);
                 var token = _jwtTokenService.CreateAccessToken(user, roles);
-                
+
                 var jwttoken = new TokenModel { AccessToken = token };
                 return jwttoken;
             }
@@ -66,7 +66,7 @@ namespace NeoSoft.Masterminds.Infrastructure.Business
                 UserName = registration.Email,
                 Profile = mentor.Profile
             };
-                     var createNewMentorResult = await _userManager.CreateAsync(user, registration.Password);
+            var createNewMentorResult = await _userManager.CreateAsync(user, registration.Password);
             if (createNewMentorResult.Succeeded)
             {
                 await _userManager.AddToRoleAsync(user, "Mentor");
@@ -74,11 +74,11 @@ namespace NeoSoft.Masterminds.Infrastructure.Business
 
                 var roles = await _userManager.GetRolesAsync(user);
                 var token = _jwtTokenService.CreateAccessToken(user, roles);
-                
+
                 var jwttoken = new TokenModel { AccessToken = token };
                 return jwttoken;
             }
-           return new TokenModel();  
+            return new TokenModel();
         }
 
         public async Task<TokenModel> Login(Login login)
@@ -87,14 +87,33 @@ namespace NeoSoft.Masterminds.Infrastructure.Business
             bool passCorrect = await _userManager.CheckPasswordAsync(registeredUser, login.Password);
 
             if (registeredUser != null && passCorrect)
-            { 
+            {
                 var roles = await _userManager.GetRolesAsync(registeredUser);
                 var token = _jwtTokenService.CreateAccessToken(registeredUser, roles);
 
                 var jwttoken = new TokenModel { AccessToken = token };
                 return jwttoken;
             }
-           return new TokenModel();
+            return new TokenModel();
         }
+
+        public async Task<TokenModel> ChangePassword(ChangePassword model)
+        {
+            var registeredUser = await _userManager.FindByEmailAsync(model.Email);
+            var result = await _userManager.ChangePasswordAsync(registeredUser,
+                    model.CurrentPassword, model.NewPassword);
+
+            if (result.Succeeded)
+            {
+                var roles = await _userManager.GetRolesAsync(registeredUser);
+                var token = _jwtTokenService.CreateAccessToken(registeredUser, roles);
+
+                var jwttoken = new TokenModel { AccessToken = token };
+                return jwttoken;
+            }
+            return new TokenModel();
+        }
+           
     }
-}
+} 
+

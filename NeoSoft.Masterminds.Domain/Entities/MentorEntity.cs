@@ -12,7 +12,8 @@ namespace NeoSoft.Masterminds.Domain.Models.Entities
         public string Description { get; set; }
 
         public ProfileEntity Profile { get; set; }
-        
+        public List<FavoritesEntity> Favorites { get; set; } = new List<FavoritesEntity>();
+
         public IList<ProfessionalAspectEntity> ProfessionalAspects { get; set; }
         public IList<ProfessionEntity> Professions { get; set; }
     }

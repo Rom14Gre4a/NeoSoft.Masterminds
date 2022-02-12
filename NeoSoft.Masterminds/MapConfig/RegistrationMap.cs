@@ -9,7 +9,7 @@ namespace NeoSoft.Masterminds.MapConfig
         public RegistrationMap()
         {
             CreateMap<UserRegistration, IncomUserRegistration>();   
-            CreateMap<MentorRegistration, IncomMentorRegistration>();
+            //CreateMap<MentorRegistration, IncomMentorRegistration>();
         }
     }
 

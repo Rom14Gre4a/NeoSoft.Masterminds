@@ -15,6 +15,7 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
         }
         public DbSet<ProfileEntity> Profiles { get; set; }
         public DbSet<MentorEntity> Mentors { get; set; }
+        public DbSet<FavoritesEntity> Favorites { get; set; }
         public DbSet<ProfessionEntity> Professions { get; set; }
         public DbSet<ProfessionalAspectEntity> ProfessionalAspects { get; set; }
         public DbSet<ReviewEntity> Reviews { get; set; }
@@ -29,6 +30,7 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
             OnReviewEntityCreating(modelBuilder);
             OnFileEntityCreating(modelBuilder);
 
+            OnFavoriteEntityCreating(modelBuilder);
             OnProfessionTableCreating(modelBuilder);
             OnProfessionalAspectsTableCreating(modelBuilder);
 
@@ -52,6 +54,25 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
                 .WithOne()
                 .HasForeignKey<ProfileEntity>(pe => pe.PhotoId);
         }
+        private void OnFavoriteEntityCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<FavoritesEntity>().ToTable("Favorites");
+            modelBuilder.Entity<FavoritesEntity>()
+           .HasKey(t => new { t.MentorId, t.ProfileId });
+            modelBuilder.Entity<FavoritesEntity>().HasKey(p => p.Id);
+
+            modelBuilder.Entity<FavoritesEntity>()
+                .HasOne(sc => sc.Mentor)
+                .WithMany(s => s.Favorites)
+                .HasForeignKey(sc => sc.MentorId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<FavoritesEntity>()
+                .HasOne(sc => sc.Profile)
+                .WithMany(c => c.Favorites)
+                .HasForeignKey(sc => sc.ProfileId)
+                .OnDelete(DeleteBehavior.NoAction);
+        }
         private void OnMentorEntityCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<MentorEntity>().ToTable("Mentors");
@@ -62,10 +83,17 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
                 .HasOne(me => me.Profile)
                 .WithOne(x => x.Mentor)
                 .HasForeignKey<MentorEntity>(me => me.Id)
-                .OnDelete(DeleteBehavior.Cascade); 
-            
-            
-          
+                .OnDelete(DeleteBehavior.Cascade);
+
+
+
+            //modelBuilder.Entity<MentorEntity>()
+            //   .HasOne(s => s.Profile)
+            //   .WithMany(s => s.Mentors)
+            //   .HasForeignKey<MentorEntity>(me => me.
+            //   .OnDelete(DeleteBehavior.Cascade)
+            //   .UsingEntity(j => j.ToTable("Favorites"));
+      
             modelBuilder.Entity<MentorEntity>()
                 .HasMany(s => s.Professions)
                 .WithMany(s => s.Mentors)
@@ -74,9 +102,7 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
             modelBuilder.Entity<MentorEntity>()
                .HasMany(s => s.ProfessionalAspects)
                .WithMany(s => s.Mentors)
-               .UsingEntity(j => j.ToTable("MentorsProfessionalAspects"));
-
-           
+               .UsingEntity(j => j.ToTable("MentorsProfessionalAspects"));     
         }
        
         private void OnReviewEntityCreating(ModelBuilder modelBuilder)

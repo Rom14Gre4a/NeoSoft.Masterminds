@@ -9,6 +9,7 @@ namespace NeoSoft.Masterminds.Services.Interfaces
     public interface IAccountService
     {
         Task<TokenModel> Login(Login login);
+        Task<TokenModel> ChangePassword(ChangePassword model);
 
         Task<TokenModel> CreateNewUserAccountAsync(UserRegistration registration);
 

@@ -66,6 +66,10 @@ namespace NeoSoft.Masterminds
             services.AddScoped<IUserProfileService, UserProfileService>();
             services.AddScoped<IProfileRepository, ProfileRepository>();
 
+            services.AddScoped<IFavoriteMentorRepository, FavoriteMentorRepository>();
+            services.AddScoped<IFavoriteMentorService, FavoriteMentorService>();
+
+
             services.AddIdentity<AppUser, AppRole>(options =>{
                 options.User.RequireUniqueEmail = true;
                 options.Password.RequiredLength = 6;

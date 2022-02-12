@@ -33,22 +33,12 @@ namespace NeoSoft.Masterminds.Controllers
 
             var fileId = 0;
 
-            try
+            if (uploadProfilePhoto.Avatar.Length > 0)
             {
-                if (uploadProfilePhoto.Avatar.Length > 0)
-                {
-                    var fileBytes = HttpRequestExtension.GetFileToByte(uploadProfilePhoto.Avatar);
-                    fileId = await _fileService.ConvertToUploadImageFileModel(uploadProfilePhoto.Avatar, fileBytes, _appEnvironment.WebRootPath);
-                }
-                return fileId;
-
+                var fileBytes = HttpRequestExtension.GetFileToByte(uploadProfilePhoto.Avatar);
+                fileId = await _fileService.ConvertToUploadImageFileModel(uploadProfilePhoto.Avatar, fileBytes, _appEnvironment.WebRootPath);
             }
-            catch (Exception ex)
-            {
-                _logger.LogInformation($"Post photo action finished successfuly");
-
-                return fileId;
-            }
+            return fileId;
         }
 
         [HttpGet("{fileId:int}")]

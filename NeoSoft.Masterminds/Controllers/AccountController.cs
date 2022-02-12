@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NeoSoft.Masterminds.Domain.Models.Models.Auth;
@@ -29,7 +30,12 @@ namespace NeoSoft.Masterminds.Controllers
        
         public async Task<ApiResponse<TokenApiModel>> Login(IncomLogin login)
         {
-            var token = await _accountService.Login(_mapper.Map<Login>(login));
+            var token = await _accountService.Login(new Login
+            {
+                Email = login.Email,
+                Password = login.Password
+            });
+            //var token = await _accountService.Login(_mapper.Map<Login>(login));
 
             return  _mapper.Map<TokenApiModel>(token);
            
@@ -41,7 +47,15 @@ namespace NeoSoft.Masterminds.Controllers
         {
             _logger.LogInformation("Registration user action started");
 
-            var registeredUser = _mapper.Map<UserRegistration>(registration);
+            var registeredUser = new UserRegistration
+            {
+                Email = registration.Email,
+                FirstName = registration.FirstName,
+                LastName = registration.LastName,
+                Password = registration.Password,
+                ConfirmPassword = registration.ConfirmPassword,
+                PhotoId = registration.PhotoId
+            };
 
             var token = await _accountService.CreateNewUserAccountAsync(registeredUser);
 
@@ -63,6 +77,19 @@ namespace NeoSoft.Masterminds.Controllers
 
             return _mapper.Map<TokenApiModel>(token);
 
+        }
+
+        [HttpPost("change-password")]
+        public async Task<ApiResponse<TokenApiModel>> ChangePassword(ChangePasswordModel model)
+        {
+            var newPassword = new ChangePassword
+            {
+                Email = model.Email,
+                CurrentPassword = model.CurrentPassword,
+                NewPassword = model.NewPassword
+            };
+            var token = await _accountService.ChangePassword(newPassword);
+            return _mapper.Map<TokenApiModel>(token);
         }
     }
 }

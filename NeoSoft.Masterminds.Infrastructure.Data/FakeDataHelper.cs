@@ -54,7 +54,7 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
             "c289844f-a838-4c9d-a03f-5354f0a6b070",
             "e8b56e48-ac8b-4113-9372-18e5598ba662",
         };
-        
+
         private readonly MastermindsDbContext _context;
         private readonly UserManager<AppUser> _userManager;
         private readonly RoleManager<AppRole> _roleManager;
@@ -63,6 +63,7 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
         private List<ProfileEntity> _registredUsers { get; set; }
         private List<MentorEntity> _mentors { get; set; }
 
+        private List<FavoritesEntity> _favorites { get; set; }
 
         public FakeDataHelper(MastermindsDbContext contenxt, UserManager<AppUser> userManager, RoleManager<AppRole> roleManager)
         {
@@ -70,7 +71,8 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
             _registredUsers = new List<ProfileEntity>();
             _mentors = new List<MentorEntity>();
             _reviews = new List<ReviewEntity>();
-            _faker = new Faker();
+            _favorites = new List<FavoritesEntity>();
+           _faker = new Faker();
             _userManager = userManager;
             _roleManager = roleManager;
 
@@ -88,13 +90,13 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
             int mentorCount = 50;
             var fakeProfessions = GenerateProfessions();
             var fakeProfessional = GenerateProfessionalAspect();
-            
+
             await _context.AddRangeAsync(fakeProfessions);
             await _context.AddRangeAsync(fakeProfessional);
             await _context.SaveChangesAsync();
-           
+
             await GenerateMentors(fakeProfessional, fakeProfessions, mentorCount);
-          
+
             await _context.SaveChangesAsync();
 
             await CreateProfileForUsersAsync(mentorCount);
@@ -102,7 +104,9 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
             await _context.SaveChangesAsync();
 
             await GenerateReviewers(mentorCount);
-           
+
+           await GenerateFavorites(mentorCount);
+
             await CreateIdentityForMentors();
 
             await CreateIdentityForUsers();
@@ -188,6 +192,22 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
             };
 
         }
+
+        private async Task GenerateFavorites(int mentorCount)
+        {
+            for (int i = 0; i < mentorCount; i++)
+            {
+                FavoritesEntity favorite = new FavoritesEntity
+                {
+
+                    ProfileId = _faker.PickRandom(_registredUsers.Select(m => m.Id)),
+                    MentorId = _faker.PickRandom(_mentors.Select(m => m.Id)),
+                   
+                };
+                _favorites.Add(favorite);
+            }
+            await _context.AddRangeAsync(_favorites);
+        }
         private async Task GenerateMentors(List<ProfessionalAspectEntity> profAsp, List<ProfessionEntity> profi, int mentorCount)
         {
             for (int i = 0; i < mentorCount; i++)
@@ -197,13 +217,14 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
                     HourlyRate = _faker.Random.Int(5, 50),
                     Description = _faker.Lorem.Text(),
                     ProfessionalAspects = profAsp.Skip(3).Take(4).ToList(),
-                    Professions = profi.Skip(3).Take(4).ToList(), 
+                    Professions = profi.Skip(3).Take(4).ToList(),
                     Profile = new ProfileEntity
                     {
                         ProfileFirstName = _faker.Name.FirstName(),
                         ProfileLastName = _faker.Name.LastName(),
-                        Photo = GetProfilePhoto(_faker.Random.Int(0, ExistingImages.Length - 1)),
+                        Photo = GetProfilePhoto(_faker.Random.Int(0, ExistingImages.Length - 1)),                     
                     }
+
                 };
 
                 _mentors.Add(mentor);

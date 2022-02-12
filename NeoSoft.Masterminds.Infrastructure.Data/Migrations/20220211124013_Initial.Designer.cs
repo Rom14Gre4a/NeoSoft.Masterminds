@@ -10,7 +10,7 @@ using NeoSoft.Masterminds.Infrastructure.Data;
 namespace NeoSoft.Masterminds.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(MastermindsDbContext))]
-    [Migration("20220204085752_Initial")]
+    [Migration("20220211124013_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -49,6 +49,28 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Migrations
                     b.HasIndex("ProfessionalAspectsId");
 
                     b.ToTable("MentorsProfessionalAspects");
+                });
+
+            modelBuilder.Entity("NeoSoft.Masterminds.Domain.Models.Entities.FavoritesEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("MentorId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProfileId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MentorId");
+
+                    b.HasIndex("ProfileId");
+
+                    b.ToTable("Favorites");
                 });
 
             modelBuilder.Entity("NeoSoft.Masterminds.Domain.Models.Entities.FileEntity", b =>
@@ -240,14 +262,14 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Migrations
                         new
                         {
                             Id = 1,
-                            ConcurrencyStamp = "93a02e3e-f1eb-4161-86ad-97906c726cbd",
+                            ConcurrencyStamp = "c59b54e3-6fa0-493d-b635-346a2a40db10",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
                             Id = 2,
-                            ConcurrencyStamp = "7ec44100-b737-498f-92b2-b2cdad48e787",
+                            ConcurrencyStamp = "1f7cfff8-0efc-4870-9316-9381ab4546ba",
                             Name = "Mentor",
                             NormalizedName = "MENTOR"
                         });
@@ -460,6 +482,25 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("NeoSoft.Masterminds.Domain.Models.Entities.FavoritesEntity", b =>
+                {
+                    b.HasOne("NeoSoft.Masterminds.Domain.Models.Entities.MentorEntity", "Mentor")
+                        .WithMany("Favorites")
+                        .HasForeignKey("MentorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("NeoSoft.Masterminds.Domain.Models.Entities.ProfileEntity", "Profile")
+                        .WithMany("Favorites")
+                        .HasForeignKey("ProfileId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Mentor");
+
+                    b.Navigation("Profile");
+                });
+
             modelBuilder.Entity("NeoSoft.Masterminds.Domain.Models.Entities.Identity.AppIdentityRoleClaim", b =>
                 {
                     b.HasOne("NeoSoft.Masterminds.Domain.Models.Entities.Identity.AppRole", null)
@@ -576,9 +617,16 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Migrations
                     b.Navigation("ToProfile");
                 });
 
+            modelBuilder.Entity("NeoSoft.Masterminds.Domain.Models.Entities.MentorEntity", b =>
+                {
+                    b.Navigation("Favorites");
+                });
+
             modelBuilder.Entity("NeoSoft.Masterminds.Domain.Models.Entities.ProfileEntity", b =>
                 {
                     b.Navigation("AppUser");
+
+                    b.Navigation("Favorites");
 
                     b.Navigation("Mentor");
 
