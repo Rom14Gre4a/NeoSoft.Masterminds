@@ -10,7 +10,7 @@ using NeoSoft.Masterminds.Infrastructure.Data;
 namespace NeoSoft.Masterminds.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(MastermindsDbContext))]
-    [Migration("20220211124013_Initial")]
+    [Migration("20220212190939_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -20,6 +20,21 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("ProductVersion", "5.0.13")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+            modelBuilder.Entity("Favorites", b =>
+                {
+                    b.Property<int>("FavoritesId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("fansId")
+                        .HasColumnType("int");
+
+                    b.HasKey("FavoritesId", "fansId");
+
+                    b.HasIndex("fansId");
+
+                    b.ToTable("Favorites");
+                });
 
             modelBuilder.Entity("MentorEntityProfessionEntity", b =>
                 {
@@ -49,28 +64,6 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Migrations
                     b.HasIndex("ProfessionalAspectsId");
 
                     b.ToTable("MentorsProfessionalAspects");
-                });
-
-            modelBuilder.Entity("NeoSoft.Masterminds.Domain.Models.Entities.FavoritesEntity", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("MentorId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ProfileId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MentorId");
-
-                    b.HasIndex("ProfileId");
-
-                    b.ToTable("Favorites");
                 });
 
             modelBuilder.Entity("NeoSoft.Masterminds.Domain.Models.Entities.FileEntity", b =>
@@ -262,14 +255,14 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Migrations
                         new
                         {
                             Id = 1,
-                            ConcurrencyStamp = "c59b54e3-6fa0-493d-b635-346a2a40db10",
+                            ConcurrencyStamp = "b9e26a25-1f5f-496d-b142-ca8f8babfbc1",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
                             Id = 2,
-                            ConcurrencyStamp = "1f7cfff8-0efc-4870-9316-9381ab4546ba",
+                            ConcurrencyStamp = "6dc0d554-7ea1-4f09-abcf-5033519dd57d",
                             Name = "Mentor",
                             NormalizedName = "MENTOR"
                         });
@@ -452,6 +445,21 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Migrations
                     b.ToTable("Reviews");
                 });
 
+            modelBuilder.Entity("Favorites", b =>
+                {
+                    b.HasOne("NeoSoft.Masterminds.Domain.Models.Entities.MentorEntity", null)
+                        .WithMany()
+                        .HasForeignKey("FavoritesId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("NeoSoft.Masterminds.Domain.Models.Entities.ProfileEntity", null)
+                        .WithMany()
+                        .HasForeignKey("fansId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("MentorEntityProfessionEntity", b =>
                 {
                     b.HasOne("NeoSoft.Masterminds.Domain.Models.Entities.MentorEntity", null)
@@ -480,25 +488,6 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Migrations
                         .HasForeignKey("ProfessionalAspectsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("NeoSoft.Masterminds.Domain.Models.Entities.FavoritesEntity", b =>
-                {
-                    b.HasOne("NeoSoft.Masterminds.Domain.Models.Entities.MentorEntity", "Mentor")
-                        .WithMany("Favorites")
-                        .HasForeignKey("MentorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("NeoSoft.Masterminds.Domain.Models.Entities.ProfileEntity", "Profile")
-                        .WithMany("Favorites")
-                        .HasForeignKey("ProfileId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Mentor");
-
-                    b.Navigation("Profile");
                 });
 
             modelBuilder.Entity("NeoSoft.Masterminds.Domain.Models.Entities.Identity.AppIdentityRoleClaim", b =>
@@ -617,16 +606,9 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Migrations
                     b.Navigation("ToProfile");
                 });
 
-            modelBuilder.Entity("NeoSoft.Masterminds.Domain.Models.Entities.MentorEntity", b =>
-                {
-                    b.Navigation("Favorites");
-                });
-
             modelBuilder.Entity("NeoSoft.Masterminds.Domain.Models.Entities.ProfileEntity", b =>
                 {
                     b.Navigation("AppUser");
-
-                    b.Navigation("Favorites");
 
                     b.Navigation("Mentor");
 

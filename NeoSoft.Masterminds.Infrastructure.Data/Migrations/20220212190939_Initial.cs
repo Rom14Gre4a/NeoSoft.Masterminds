@@ -242,23 +242,20 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Migrations
                 name: "Favorites",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    MentorId = table.Column<int>(type: "int", nullable: false),
-                    ProfileId = table.Column<int>(type: "int", nullable: false)
+                    FavoritesId = table.Column<int>(type: "int", nullable: false),
+                    fansId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Favorites", x => x.Id);
+                    table.PrimaryKey("PK_Favorites", x => new { x.FavoritesId, x.fansId });
                     table.ForeignKey(
-                        name: "FK_Favorites_Mentors_MentorId",
-                        column: x => x.MentorId,
+                        name: "FK_Favorites_Mentors_FavoritesId",
+                        column: x => x.FavoritesId,
                         principalTable: "Mentors",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Favorites_Profiles_ProfileId",
-                        column: x => x.ProfileId,
+                        name: "FK_Favorites_Profiles_fansId",
+                        column: x => x.fansId,
                         principalTable: "Profiles",
                         principalColumn: "Id");
                 });
@@ -359,12 +356,12 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Migrations
             migrationBuilder.InsertData(
                 table: "AppRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "MentorId", "Name", "NormalizedName", "UserId" },
-                values: new object[] { 1, "c59b54e3-6fa0-493d-b635-346a2a40db10", null, "User", "USER", null });
+                values: new object[] { 1, "b9e26a25-1f5f-496d-b142-ca8f8babfbc1", null, "User", "USER", null });
 
             migrationBuilder.InsertData(
                 table: "AppRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "MentorId", "Name", "NormalizedName", "UserId" },
-                values: new object[] { 2, "1f7cfff8-0efc-4870-9316-9381ab4546ba", null, "Mentor", "MENTOR", null });
+                values: new object[] { 2, "6dc0d554-7ea1-4f09-abcf-5033519dd57d", null, "Mentor", "MENTOR", null });
 
             migrationBuilder.InsertData(
                 table: "Files",
@@ -421,14 +418,9 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Favorites_MentorId",
+                name: "IX_Favorites_fansId",
                 table: "Favorites",
-                column: "MentorId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Favorites_ProfileId",
-                table: "Favorites",
-                column: "ProfileId");
+                column: "fansId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_MentorsProfessionalAspects_ProfessionalAspectsId",

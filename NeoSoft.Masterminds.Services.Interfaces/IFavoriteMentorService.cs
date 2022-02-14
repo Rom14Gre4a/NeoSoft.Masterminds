@@ -10,7 +10,8 @@ namespace NeoSoft.Masterminds.Services.Interfaces
     public interface IFavoriteMentorService
     {
         Task<List<MentorListModel>> GetAll( string email);
+        Task<int> FavoritesCount(int mentorId);
         //Task<MentorModel> AddToFavorites();
-      //  Task<MentorModel> RemoveFromFavorites();
+        //  Task<MentorModel> RemoveFromFavorites();
     }
 }

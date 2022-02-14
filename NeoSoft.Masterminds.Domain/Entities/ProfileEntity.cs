@@ -9,7 +9,7 @@ namespace NeoSoft.Masterminds.Domain.Models.Entities
         public FileEntity Photo { get; set; }
 
         public MentorEntity Mentor { get; set; }
-        public List<FavoritesEntity> Favorites { get; set; } = new List<FavoritesEntity>();
+        public List<MentorEntity> Favorites { get; set; } 
 
         public string ProfileFirstName { get; set; }
         public string ProfileLastName { get; set; }

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace NeoSoft.Masterminds.Controllers
 {
-    [Route("api/favorite")]
+    [Route("api")]
     [ApiController]
     public class FavoriteController : Controller
     {
@@ -23,8 +23,8 @@ namespace NeoSoft.Masterminds.Controllers
             _mapper = mapper;
         }
 
-       // [Authorize]
-        [HttpGet]
+        [Authorize]
+        [HttpGet("favorites")]
         public async Task<ApiResponse<List<MentorListView>>> GetAllFavorites(string email)
         {
             if (User.Identity.IsAuthenticated)
@@ -32,9 +32,26 @@ namespace NeoSoft.Masterminds.Controllers
                 email = User.FindFirstValue(ClaimTypes.Email);
             }
             var mentorList = await _service.GetAll(email);
+          
             return _mapper.Map<List<MentorListView>>(mentorList);
 
         }
 
+
+        //[Authorize]
+        //[HttpPut("add-remove-favorite")]
+        //public async Task<ApiResponse<List<MentorListView>>> UpdateFavorites(int mentorId)
+        //{
+
+        //}
+
+        [Authorize]
+        [HttpGet("favorites-count")]
+        public async Task<ApiResponse<int>> FavoritesCount(int mentorId)
+        {
+           
+            var favoriteCount = await _service.FavoritesCount(mentorId);
+            return favoriteCount;
+        }
     }
 }

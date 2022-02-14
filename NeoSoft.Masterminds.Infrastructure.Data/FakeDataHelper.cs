@@ -63,22 +63,20 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
         private List<ProfileEntity> _registredUsers { get; set; }
         private List<MentorEntity> _mentors { get; set; }
 
-        private List<FavoritesEntity> _favorites { get; set; }
-
         public FakeDataHelper(MastermindsDbContext contenxt, UserManager<AppUser> userManager, RoleManager<AppRole> roleManager)
         {
             _context = contenxt;
             _registredUsers = new List<ProfileEntity>();
             _mentors = new List<MentorEntity>();
             _reviews = new List<ReviewEntity>();
-            _favorites = new List<FavoritesEntity>();
+          
            _faker = new Faker();
             _userManager = userManager;
             _roleManager = roleManager;
 
         }
 
-        public async Task SeedFakeData()//UserManager<AppUser> userManager, RoleManager<AppRole> roleManager
+        public async Task SeedFakeData()
         {
             var anyMentors = await _context.Mentors.AnyAsync();
 
@@ -104,8 +102,6 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
             await _context.SaveChangesAsync();
 
             await GenerateReviewers(mentorCount);
-
-           await GenerateFavorites(mentorCount);
 
             await CreateIdentityForMentors();
 
@@ -193,21 +189,6 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
 
         }
 
-        private async Task GenerateFavorites(int mentorCount)
-        {
-            for (int i = 0; i < mentorCount; i++)
-            {
-                FavoritesEntity favorite = new FavoritesEntity
-                {
-
-                    ProfileId = _faker.PickRandom(_registredUsers.Select(m => m.Id)),
-                    MentorId = _faker.PickRandom(_mentors.Select(m => m.Id)),
-                   
-                };
-                _favorites.Add(favorite);
-            }
-            await _context.AddRangeAsync(_favorites);
-        }
         private async Task GenerateMentors(List<ProfessionalAspectEntity> profAsp, List<ProfessionEntity> profi, int mentorCount)
         {
             for (int i = 0; i < mentorCount; i++)
@@ -218,11 +199,12 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
                     Description = _faker.Lorem.Text(),
                     ProfessionalAspects = profAsp.Skip(3).Take(4).ToList(),
                     Professions = profi.Skip(3).Take(4).ToList(),
+
                     Profile = new ProfileEntity
                     {
                         ProfileFirstName = _faker.Name.FirstName(),
                         ProfileLastName = _faker.Name.LastName(),
-                        Photo = GetProfilePhoto(_faker.Random.Int(0, ExistingImages.Length - 1)),                     
+                        Photo = GetProfilePhoto(_faker.Random.Int(0, ExistingImages.Length - 1)),
                     }
 
                 };
