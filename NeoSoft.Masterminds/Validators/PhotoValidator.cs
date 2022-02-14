@@ -25,7 +25,7 @@ namespace NeoSoft.Masterminds.Validators
                 })
                 .WithMessage("ContentType must be 'image/png' or'image/jpeg' ");
 
-            RuleFor(p => p.Avatar.Length).Must(length => length / Math.Pow(1024, 2) < 15)
+            RuleFor(p => p.Avatar.Length).Must(length => length / Math.Pow(1024, 1) < 150)
                 .WithMessage("Photo size must be no more than 15MB");
         }
     }
