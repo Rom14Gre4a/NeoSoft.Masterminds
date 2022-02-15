@@ -6,7 +6,6 @@ using AutoMapper;
 using NeoSoft.Masterminds.Domain;
 using NeoSoft.Masterminds.Domain.Interfaces;
 using NeoSoft.Masterminds.Domain.Models;
-using NeoSoft.Masterminds.Domain.Models.Entities;
 using NeoSoft.Masterminds.Domain.Models.Exceptions;
 using NeoSoft.Masterminds.Domain.Models.Filters;
 using NeoSoft.Masterminds.Domain.Models.Models;
@@ -79,42 +78,12 @@ namespace NeoSoft.Masterminds.Infrastructure.Business
                     LastName = mentor.Profile.ProfileLastName,
                     ProfilePhotoId = mentor.Profile.PhotoId ?? Constants.UnknownImageId,
                     Rating = rating[mentor.Id],
-                    Professions = MyConvertor(mentor.Professions.ToList())
-
+                    Professions = Helper.MyConvertor(mentor.Professions.ToList())
                 });
             }
-
             return list;
         }
-        private List<ProfessionsModel> MyConvertor(List<ProfessionEntity> source)
-        {
-            List<ProfessionsModel> dest = new List<ProfessionsModel>();
-            foreach (var sourceItem in source)
-            {
-                dest.Add(new ProfessionsModel
-                {
-                    Id = sourceItem.Id,
-                    Name = sourceItem.Name
-                });
-            }
-            return dest;
-        }
-
-        private static double СalculateRating(int totalReviews, double ratingSum)
-        {
-            if (totalReviews == 0 || ratingSum == 0.0)
-                return 0.0;
-
-            return Math.Max(Math.Round(ratingSum / totalReviews * 2, MidpointRounding.AwayFromZero) / 2, 0); // 3.2132 => 3.5 // 2.5 // 1.5
-        }
-        private async Task<double> СalculateRating(int mentorId)
-        {
-            var totalReviews = await _mentorRepository.GetMentorTotalReviews(mentorId);
-            var ratingSum = await _mentorRepository.GetMentorRatingSum(mentorId);
-
-            return СalculateRating(totalReviews, ratingSum);
-        }
-        private async Task<Dictionary<int, double>> СalculateRating(int[] mentorIds)
+        public async Task<Dictionary<int, double>> СalculateRating(int[] mentorIds)
         {
             var totalReviews = await _mentorRepository.GetMentorTotalReviews(mentorIds);
             var ratingSums = await _mentorRepository.GetMentorRatingSum(mentorIds);
@@ -138,7 +107,20 @@ namespace NeoSoft.Masterminds.Infrastructure.Business
 
             return result;
         }
+        private static double СalculateRating(int totalReviews, double ratingSum)
+        {
+            if (totalReviews == 0 || ratingSum == 0.0)
+                return 0.0;
 
+            return Math.Max(Math.Round(ratingSum / totalReviews * 2, MidpointRounding.AwayFromZero) / 2, 0);
+        }
+        public  async Task<double> СalculateRating(int mentorId)
+        {
+            var totalReviews = await _mentorRepository.GetMentorTotalReviews(mentorId);
+            var ratingSum = await _mentorRepository.GetMentorRatingSum(mentorId);
+
+            return СalculateRating(totalReviews, ratingSum);
+        }
     }
 }
  

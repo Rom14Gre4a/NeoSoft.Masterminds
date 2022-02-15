@@ -197,8 +197,8 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
                 {
                     HourlyRate = _faker.Random.Int(5, 50),
                     Description = _faker.Lorem.Text(),
-                    ProfessionalAspects = profAsp.Skip(3).Take(4).ToList(),
-                    Professions = profi.Skip(3).Take(4).ToList(),
+                    ProfessionalAspects = profAsp.Skip(_faker.Random.Int(0, 9)).Take(3).ToList(),
+                    Professions = profi.Skip(_faker.Random.Int(0, 13)).Take(1).ToList(),
 
                     Profile = new ProfileEntity
                     {

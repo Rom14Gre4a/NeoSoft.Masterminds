@@ -93,16 +93,16 @@ namespace NeoSoft.Masterminds.Infrastructure.Data
             modelBuilder.Entity<ReviewEntity>().Property(x => x.Rating).IsRequired();
             modelBuilder
                 .Entity<ReviewEntity>()
-                .HasOne(r => r.FromProfile)         //від кого
-                .WithMany(r => r.SentReviews)        // отримав    
-                .HasForeignKey(r => r.FromProfileId) // від кого айді   
+                .HasOne(r => r.FromProfile)         
+                .WithMany(r => r.SentReviews)        
+                .HasForeignKey(r => r.FromProfileId)  
                 .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder
                 .Entity<ReviewEntity>()
-               .HasOne(r => r.ToProfile)             //Кому 
-               .WithMany(p => p.RecivedReviews)      //відправив
-               .HasForeignKey(r => r.ToProfileId)    //кому відправив айді
+               .HasOne(r => r.ToProfile)             
+               .WithMany(p => p.RecivedReviews)      
+               .HasForeignKey(r => r.ToProfileId)   
                .OnDelete(DeleteBehavior.NoAction);
         }
         private void OnFileEntityCreating(ModelBuilder modelBuilder)

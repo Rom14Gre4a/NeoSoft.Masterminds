@@ -356,12 +356,12 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Migrations
             migrationBuilder.InsertData(
                 table: "AppRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "MentorId", "Name", "NormalizedName", "UserId" },
-                values: new object[] { 1, "078b8ce2-7098-4a20-aa4b-4b6b69b15387", null, "User", "USER", null });
+                values: new object[] { 1, "b4026984-b7e2-4e6e-9984-18de3253da5e", null, "User", "USER", null });
 
             migrationBuilder.InsertData(
                 table: "AppRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "MentorId", "Name", "NormalizedName", "UserId" },
-                values: new object[] { 2, "ee4089a8-c18d-472d-a60c-d8e64e7e40eb", null, "Mentor", "MENTOR", null });
+                values: new object[] { 2, "03a19a15-24f1-4650-b6ee-8496e26e994f", null, "Mentor", "MENTOR", null });
 
             migrationBuilder.InsertData(
                 table: "Files",

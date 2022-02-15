@@ -10,7 +10,7 @@ using NeoSoft.Masterminds.Infrastructure.Data;
 namespace NeoSoft.Masterminds.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(MastermindsDbContext))]
-    [Migration("20220214095725_Initial")]
+    [Migration("20220215174355_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -255,14 +255,14 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Migrations
                         new
                         {
                             Id = 1,
-                            ConcurrencyStamp = "078b8ce2-7098-4a20-aa4b-4b6b69b15387",
+                            ConcurrencyStamp = "b4026984-b7e2-4e6e-9984-18de3253da5e",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
                             Id = 2,
-                            ConcurrencyStamp = "ee4089a8-c18d-472d-a60c-d8e64e7e40eb",
+                            ConcurrencyStamp = "03a19a15-24f1-4650-b6ee-8496e26e994f",
                             Name = "Mentor",
                             NormalizedName = "MENTOR"
                         });

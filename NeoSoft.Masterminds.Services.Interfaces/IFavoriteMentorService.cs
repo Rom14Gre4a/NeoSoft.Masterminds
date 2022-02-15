@@ -1,4 +1,6 @@
 ﻿using NeoSoft.Masterminds.Domain;
+using NeoSoft.Masterminds.Domain.Models.Entities;
+using NeoSoft.Masterminds.Domain.Models.Entities.Identity;
 using NeoSoft.Masterminds.Domain.Models.Models;
 using System;
 using System.Collections.Generic;
@@ -10,8 +12,8 @@ namespace NeoSoft.Masterminds.Services.Interfaces
     public interface IFavoriteMentorService
     {
         Task<List<MentorListModel>> GetAll( string email);
+        Task<AppUser> GetUserByEmail(string email);
         Task<int> FavoritesCount(int mentorId);
-        //Task<MentorModel> AddToFavorites();
-        //  Task<MentorModel> RemoveFromFavorites();
+        Task<bool> UpdateFavorites(AppUser user, int mentorId);
     }
 }

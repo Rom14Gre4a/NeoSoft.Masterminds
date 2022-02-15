@@ -14,8 +14,10 @@ namespace NeoSoft.Masterminds.Controllers
     [ApiController]
     public class FavoriteController : Controller
     {
+       
         private readonly IFavoriteMentorService _service;
         private readonly IMapper _mapper;
+
 
         public FavoriteController(IFavoriteMentorService service, IMapper mapper)
         {
@@ -37,13 +39,18 @@ namespace NeoSoft.Masterminds.Controllers
 
         }
 
+        [Authorize]
+        [HttpPut("add-remove-favorite")]
+        public async Task<ApiResponse<bool>> UpdateFavorites(int mentorId)
+        {
 
-        //[Authorize]
-        //[HttpPut("add-remove-favorite")]
-        //public async Task<ApiResponse<List<MentorListView>>> UpdateFavorites(int mentorId)
-        //{
+            var email = User.FindFirstValue(ClaimTypes.Name);
+            
+            var user = await _service.GetUserByEmail(email);
+            var a = await _service.UpdateFavorites(user, mentorId);
+            return a;
 
-        //}
+        }
 
         [Authorize]
         [HttpGet("favorites-count")]

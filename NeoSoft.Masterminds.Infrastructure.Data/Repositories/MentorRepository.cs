@@ -1,12 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NeoSoft.Masterminds.Domain.Interfaces;
 using NeoSoft.Masterminds.Domain.Models.Entities;
-using NeoSoft.Masterminds.Domain;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
-using NeoSoft.Masterminds.Domain.Models;
 using System.Linq;
 using NeoSoft.Masterminds.Domain.Models.Enums;
 using NeoSoft.Masterminds.Domain.Models.Filters;

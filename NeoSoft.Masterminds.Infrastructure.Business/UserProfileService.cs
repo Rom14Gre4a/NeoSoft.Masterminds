@@ -13,12 +13,10 @@ namespace NeoSoft.Masterminds.Infrastructure.Business
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly IProfileRepository _profileRepository;
-        private readonly IMapper _mapper;
 
-        public UserProfileService(UserManager<AppUser> userManager, IMapper mapper, IProfileRepository profileRepository)
+        public UserProfileService(UserManager<AppUser> userManager, IProfileRepository profileRepository)
         {
             _userManager = userManager;
-            _mapper = mapper;
             _profileRepository = profileRepository;
         }
 
