@@ -28,7 +28,7 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Repositories
         }
         public async Task<ProfileEntity> GetFavoriteMentorAsync(int profileId)
         {
-            var favoriteMentor = await _dbContext.Mentors.Where(p => p.Id == profileId).SelectMany(p => p.fans).FirstOrDefaultAsync();
+            var favoriteMentor = await _dbContext.Profiles.FirstOrDefaultAsync(profile => profile.Id == profileId);
 
             return favoriteMentor;
         }
@@ -55,7 +55,7 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Repositories
 
         public async Task AddFavorite(ProfileEntity profile, int mentorId)
         {
-            var favoriteMentor = await _dbContext.Mentors.Where(p => p.Id == mentorId)
+            var favoriteMentor = await _dbContext.Mentors
                 .FirstOrDefaultAsync(profile => profile.Id == mentorId);
 
             if (favoriteMentor == null)
@@ -70,10 +70,10 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Repositories
 
         public async Task RemoveFavorite(ProfileEntity profile, int mentorId)
         {
-            var favoriteMentor = await _dbContext.Mentors.Where(p => p.Id == mentorId)
-               .FirstOrDefaultAsync(profile => profile.Id == mentorId);
+            var favoriteMentor = await _dbContext.Mentors
+                .FirstOrDefaultAsync(profile => profile.Id == mentorId);
 
-            if(favoriteMentor == null)
+            if (favoriteMentor == null)
             {
                 throw new NotFoundException($"Mentor with id = {mentorId} not found!");
             }
@@ -81,9 +81,12 @@ namespace NeoSoft.Masterminds.Infrastructure.Data.Repositories
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task<int> GetProfileTotalFavorites(int profileId)
+        public async Task<int> GetProfileTotalFavorites(string email)
         {
-            var totalFavorites = await _dbContext.Profiles.Where(p => p.Id == profileId).SelectMany(p => p.Favorites).CountAsync();
+            var totalFavorites = await _dbContext.Users
+                .Include(u => u.Profile).ThenInclude(m => m.Favorites).CountAsync(u => u.Email == email);
+
+            //var totalFavorites = await _dbContext.Profiles.Where(p => p.Id == mentorId).SelectMany(p => p.Favorites).CountAsync();
             return totalFavorites;
         }
     }

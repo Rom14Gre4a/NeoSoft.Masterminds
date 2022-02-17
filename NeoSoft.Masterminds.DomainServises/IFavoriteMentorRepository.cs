@@ -13,7 +13,7 @@ namespace NeoSoft.Masterminds.Domain.Interfaces
         Task<ProfileEntity> GetFavoriteProfile(string email);
         Task AddFavorite(ProfileEntity profile, int mentorId);
         Task RemoveFavorite(ProfileEntity profile, int mentorId);
-        Task<int> GetProfileTotalFavorites(int mentorId);
+        Task<int> GetProfileTotalFavorites(string email);
 
 
 

@@ -86,7 +86,9 @@ namespace NeoSoft.Masterminds.Infrastructure.Business
             var registeredUser = await _userManager.FindByEmailAsync(login.Email);
             bool passCorrect = await _userManager.CheckPasswordAsync(registeredUser, login.Password);
 
-            if (registeredUser != null && passCorrect)
+            //if (registeredUser == null || passCorrect == false)
+            //    return NotFoundException(new { errorText = "Invalid username or password." });
+            if (registeredUser != null && passCorrect )
             {
                 var roles = await _userManager.GetRolesAsync(registeredUser);
                 var token = _jwtTokenService.CreateAccessToken(registeredUser, roles);

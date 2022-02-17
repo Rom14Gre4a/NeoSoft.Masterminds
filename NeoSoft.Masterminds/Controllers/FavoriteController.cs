@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NeoSoft.Masterminds.Domain.Models.Responses;
+using NeoSoft.Masterminds.Models.Incoming.Filters;
 using NeoSoft.Masterminds.Models.Outcoming;
 using NeoSoft.Masterminds.Services.Interfaces;
 using System.Collections.Generic;
@@ -27,12 +28,9 @@ namespace NeoSoft.Masterminds.Controllers
 
         [Authorize]
         [HttpGet("favorites")]
-        public async Task<ApiResponse<List<MentorListView>>> GetAllFavorites(string email)
+        public async Task<ApiResponse<List<MentorListView>>> GetAllFavorites([FromQuery] MentorFilterApiModel filter)
         {
-            if (User.Identity.IsAuthenticated)
-            {
-                email = User.FindFirstValue(ClaimTypes.Email);
-            }
+            var email = User.Identity.Name;
             var mentorList = await _service.GetAll(email);
           
             return _mapper.Map<List<MentorListView>>(mentorList);
@@ -56,8 +54,9 @@ namespace NeoSoft.Masterminds.Controllers
         [HttpGet("favorites-count")]
         public async Task<ApiResponse<int>> FavoritesCount(int mentorId)
         {
+            var email = User.FindFirstValue(ClaimTypes.Name);
            
-            var favoriteCount = await _service.FavoritesCount(mentorId);
+            var favoriteCount = await _service.FavoritesCount(email);
             return favoriteCount;
         }
     }

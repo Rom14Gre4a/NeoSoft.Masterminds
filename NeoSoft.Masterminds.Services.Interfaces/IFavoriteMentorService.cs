@@ -13,7 +13,7 @@ namespace NeoSoft.Masterminds.Services.Interfaces
     {
         Task<List<MentorListModel>> GetAll( string email);
         Task<AppUser> GetUserByEmail(string email);
-        Task<int> FavoritesCount(int mentorId);
+        Task<int> FavoritesCount(string email);
         Task<bool> UpdateFavorites(AppUser user, int mentorId);
     }
 }

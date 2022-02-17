@@ -5,6 +5,7 @@ using NeoSoft.Masterminds.Domain.Models.Entities.Identity;
 using NeoSoft.Masterminds.Domain.Models.Exceptions;
 using NeoSoft.Masterminds.Domain.Models.Models;
 using NeoSoft.Masterminds.Services.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,10 +15,12 @@ namespace NeoSoft.Masterminds.Infrastructure.Business
     public class FavoriteMentorService : IFavoriteMentorService
     {
         private readonly IFavoriteMentorRepository _favoriteMentorRepository;
-       
-        public FavoriteMentorService(IFavoriteMentorRepository favoriteMentorRepository)
+        private readonly IMentorRepository _mentorRepository;
+
+        public FavoriteMentorService(IMentorRepository mentorRepository, IFavoriteMentorRepository favoriteMentorRepository)
         {
             _favoriteMentorRepository = favoriteMentorRepository;
+            _mentorRepository = mentorRepository;
         }
         public async Task<List<MentorListModel>> GetAll(string email)
         {
@@ -29,7 +32,7 @@ namespace NeoSoft.Masterminds.Infrastructure.Business
             {
                 throw new NotFoundException($"Profile with this Id => {userApp.Id} was not found");
             }
-            var rating = await Helper.СalculateRating(FavoriteEntity.Select(m => m.Id).ToArray());
+            var rating = await СalculateRating(FavoriteEntity.Select(m => m.Id).ToArray());
             var list = new List<MentorListModel>();
             foreach (var mentor in FavoriteEntity)
             {
@@ -54,23 +57,62 @@ namespace NeoSoft.Masterminds.Infrastructure.Business
 
         public async Task<bool> UpdateFavorites(AppUser user, int mentorId)
         {
-
-            if (await _favoriteMentorRepository.GetFavoriteMentorAsync(mentorId) == null)
+            var favorite = await _favoriteMentorRepository.GetFavoriteMentorAsync(user.Id);
+            if (favorite != null)
             {
-                await _favoriteMentorRepository.AddFavorite(await _favoriteMentorRepository.GetFavoriteMentorAsync(mentorId), mentorId);
+                await _favoriteMentorRepository.AddFavorite(favorite, mentorId);
                return true;
             }
             else
             {
-                await _favoriteMentorRepository.RemoveFavorite(await _favoriteMentorRepository.GetFavoriteMentorAsync(mentorId), mentorId);
+                await _favoriteMentorRepository.RemoveFavorite(favorite, mentorId);
                 return true; 
             }
            
         }
-        public async Task<int> FavoritesCount(int mentorId)
+        public async Task<int> FavoritesCount(string email)
         {
-            var totalFavorites = await _favoriteMentorRepository.GetProfileTotalFavorites(mentorId);
+            
+            var totalFavorites = await _favoriteMentorRepository.GetProfileTotalFavorites(email);
             return totalFavorites;
+        }
+        public async Task<Dictionary<int, double>> СalculateRating(int[] mentorIds)
+        {
+            var totalReviews = await _mentorRepository.GetMentorTotalReviews(mentorIds);
+            var ratingSums = await _mentorRepository.GetMentorRatingSum(mentorIds);
+
+            var result = new Dictionary<int, double>();
+
+            foreach (var mentorId in mentorIds)
+            {
+                var mentorRating = 0.0;
+
+                if (totalReviews.ContainsKey(mentorId) && ratingSums.ContainsKey(mentorId))
+                {
+                    var ratingSum = ratingSums[mentorId];
+                    var totalReview = totalReviews[mentorId];
+
+                    mentorRating = СalculateRating(totalReview, ratingSum);
+                }
+
+                result.Add(mentorId, mentorRating);
+            }
+
+            return result;
+        }
+        private static double СalculateRating(int totalReviews, double ratingSum)
+        {
+            if (totalReviews == 0 || ratingSum == 0.0)
+                return 0.0;
+
+            return Math.Max(Math.Round(ratingSum / totalReviews * 2, MidpointRounding.AwayFromZero) / 2, 0);
+        }
+        public  async Task<double> СalculateRating(int mentorId)
+        {
+            var totalReviews = await _mentorRepository.GetMentorTotalReviews(mentorId);
+            var ratingSum = await _mentorRepository.GetMentorRatingSum(mentorId);
+
+            return СalculateRating(totalReviews, ratingSum);
         }
     }
 }
